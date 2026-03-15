@@ -43,7 +43,7 @@ export default function CinematicTextSlider() {
         }}
       >
         {[...texts, ...texts].map((t, i) => (
-          <span key={i} style={{ fontWeight: 300, letterSpacing: "0.2em", color: "#222" }}>
+          <span key={i} style={{ fontWeight: 300, letterSpacing: "0.2em", color: "black" }}>
             {t}
           </span>
         ))}
@@ -59,7 +59,7 @@ export default function CinematicTextSlider() {
         }}
       >
         {[...texts, ...texts].map((t, i) => (
-          <span key={i + 100} style={{ fontWeight: 300, letterSpacing: "0.2em", color: "#222" }}>
+          <span key={i + 100} style={{ fontWeight: 300, letterSpacing: "0.2em", color: "black" }}>
             {t}
           </span>
         ))}

@@ -66,12 +66,12 @@ export default function FeaturedProductCard({ product }: Props) {
         </Link>
 
         <div className="flex items-center gap-2">
-          <span className="text-red-600 font-semibold text-sm md:text-base">
+          <span className="text-[#740A03] font-semibold text-sm md:text-base">
             PKR  {product.discountPrice ?? product.price}
           </span>
           {product.discountPrice && (
             <span className="line-through text-gray-400 text-xs">
-              ${product.price}
+              {product.price}
             </span>
           )}
         </div>

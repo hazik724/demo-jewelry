@@ -8,20 +8,20 @@ import { motion } from "framer-motion"
 
 const slides = [
   {
-    desktop: "/hero/d1.jpg",
-    mobile: "/hero/m1.jpg",
+    desktop: "/hero/dd1.jpg",
+    mobile: "/hero/mm1.jpg",
     label: "Winter 2026",
     headline: "Silhouettes in Black",
   },
   {
-    desktop: "/hero/d2.jpg",
-    mobile: "/hero/m2.jpg",
+    desktop: "/hero/dd2.jpg",
+    mobile: "/hero/mm2.jpg",
     label: "New Collection",
     headline: "Refined Essentials",
   },
   {
-    desktop: "/hero/d3.jpg",
-    mobile: "/hero/m3.jpg",
+    desktop: "/hero/dd3.jpg",
+    mobile: "/hero/mm3.jpg",
     label: "The Edit",
     headline: "Modern Icons",
   },

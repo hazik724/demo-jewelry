@@ -31,7 +31,7 @@ export default function CategoryHighlight() {
   }, [])
 
   return (
-    <section className="bg-black text-white py-32">
+    <section className="bg-[#740A03] text-white py-32">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
 
         {/* Section Title */}
