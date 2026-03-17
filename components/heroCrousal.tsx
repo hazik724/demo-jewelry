@@ -10,20 +10,32 @@ const slides = [
   {
     desktop: "/hero/dd1.jpg",
     mobile: "/hero/mm1.jpg",
-    label: "Winter 2026",
-    headline: "Silhouettes in Black",
+    label: "Luxury Collection",
+    headline: "Timeless Gold Elegance",
   },
   {
     desktop: "/hero/dd2.jpg",
-    mobile: "/hero/mm2.jpg",
-    label: "New Collection",
-    headline: "Refined Essentials",
+    mobile: "/hero/mmm2.jpg",
+    label: "New Arrival",
+    headline: "Diamond Perfection",
   },
   {
     desktop: "/hero/dd3.jpg",
     mobile: "/hero/mm3.jpg",
-    label: "The Edit",
-    headline: "Modern Icons",
+    label: "Exclusive",
+    headline: "Crafted for Royalty",
+  },
+  {
+    desktop: "/hero/dd4.jpg",
+    mobile: "/hero/mm4.jpg",
+    label: "Trending",
+    headline: "Modern Jewelry Icons",
+  },
+  {
+    desktop: "/hero/dd5.jpg",
+    mobile: "/hero/mm5.jpg",
+    label: "Signature Pieces",
+    headline: "Shine with Confidence",
   },
 ]
 
