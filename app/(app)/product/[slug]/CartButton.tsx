@@ -36,7 +36,7 @@ export default function CartButton({
   return (
     <button
       onClick={handleAdd}
-      className="w-full border border-black py-4 tracking-widest uppercase text-sm hover:bg-[#8E7DBE] hover:text-white transition duration-500"
+      className="w-full border border-black py-4 tracking-widest uppercase text-sm hover:bg-[#2FA084] hover:text-white transition duration-500"
     >
       Add to Bag
     </button>

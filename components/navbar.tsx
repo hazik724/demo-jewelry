@@ -16,16 +16,16 @@ export default function Navbar() {
   ]
 
   return (
-    <nav className="w-full bg-[#8E7DBE] text-white sticky top-0 z-50">
+    <nav className="w-full bg-[#2FA084] text-white sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-12 py-6">
 
         {/* Logo */}
         <Link
-          href="/"
-          className="text-2xl tracking-[0.3em] font-light uppercase"
-        >
-           ZYRA
-        </Link>
+  href="/"
+  className="text-2xl tracking-[0.3em] font-light uppercase"
+>
+   ZYRA
+</Link>
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-12 text-xs tracking-[0.25em] uppercase">

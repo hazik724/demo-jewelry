@@ -7,15 +7,16 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 
 const slides = [
+   
   {
     desktop: "/hero/dd1.jpg",
-    mobile: "/hero/mobile-1.jfif",
+    mobile: "/hero/mobile-1.jpeg",
     label: "Luxury Collection",
     headline: "Timeless Gold Elegance",
   },
   {
     desktop: "/hero/dd2.jpg",
-    mobile: "/hero/mobile-2.jfif",
+    mobile: "/hero/mobile-2.jpeg",
     label: "New Arrival",
     headline: "Diamond Perfection",
   },
