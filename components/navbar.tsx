@@ -16,7 +16,7 @@ export default function Navbar() {
   ]
 
   return (
-    <nav className="w-full bg-[#740A03] text-white sticky top-0 z-50">
+    <nav className="w-full bg-[#8E7DBE] text-white sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-12 py-6">
 
         {/* Logo */}
@@ -24,7 +24,7 @@ export default function Navbar() {
           href="/"
           className="text-2xl tracking-[0.3em] font-light uppercase"
         >
-           NAME
+           ZYRA
         </Link>
 
         {/* Desktop Links */}
