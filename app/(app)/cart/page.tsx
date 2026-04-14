@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import FeaturedProducts from "@/components/featuredProducts"
+import PremiumTrustSection from "@/components/TrustSection"
 
 export default function CartPage() {
   const items = useCartStore((state) => state.items)
@@ -135,6 +136,9 @@ export default function CartPage() {
           </p>
         </div>
         
+      </div>
+      <div>
+        <PremiumTrustSection/>
       </div>
       <div>
         <FeaturedProducts/>

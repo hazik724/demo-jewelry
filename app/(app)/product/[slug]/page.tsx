@@ -4,6 +4,7 @@ import { urlFor } from "@/sanity/lib/image"
 import CartButton from "./CartButton"
 import ProductGallery from "@/components/ProductGallery"
 import FeaturedProducts from "@/components/featuredProducts"
+import WhatsAppProductButton from "@/components/ProductWhatsapp"
 
 async function getProduct(slug: string) {
   const query = `*[_type == "product" && slug.current == $slug][0]{
@@ -67,7 +68,11 @@ export default async function Page({
               {product.description}
             </p>
           </div>
-  
+          <WhatsAppProductButton
+  productName={product.title}
+  price={product.price}
+  productUrl={`https://jhumkarabyzyra.com/product/${product.slug.current}`}
+/>
           {/* Add To Cart */}
           <div className="pt-6">
             <CartButton

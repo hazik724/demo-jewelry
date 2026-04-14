@@ -6,7 +6,7 @@ import CartButton from "@/app/(app)/product/[slug]/CartButton"
 import { useCartStore } from "@/app/store/CartStore"
 import { urlFor } from "@/sanity/lib/image"
 import { toast } from "sonner"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 
 interface Product {
   _id: string
@@ -29,33 +29,27 @@ export default function FeaturedProductCard({ product }: Props) {
     ? product.images
     : ["/placeholder.png"]
 
-  // 🔥 Auto Slide
+  // ✅ Memoized image URLs (BIG performance win)
+  const imageUrls = useMemo(() => {
+    return images.map((img) =>
+      typeof img === "string"
+        ? img
+        : urlFor(img).width(500).height(600).url()
+    )
+  }, [images])
+
+  // 🔥 Auto Slide (stable)
   useEffect(() => {
-    if (images.length <= 1) return
+    if (imageUrls.length <= 1) return
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) =>
-        prev === images.length - 1 ? 0 : prev + 1
+        prev === imageUrls.length - 1 ? 0 : prev + 1
       )
     }, 3000)
 
     return () => clearInterval(interval)
-  }, [images.length])
-
-  const handleAddToCart = () => {
-    addItem({
-      _id: product._id,
-      slug: product.slug.current,
-      title: product.title,
-      image:
-        product.images?.[0]
-          ? urlFor(product.images[0]).width(500).url()
-          : "/placeholder.png",
-      price: product.discountPrice ?? product.price,
-      quantity: 1,
-    })
-    toast.success("Item added to cart")
-  }
+  }, [imageUrls.length])
 
   return (
     <div className="group relative bg-white dark:bg-gray-900 overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300">
@@ -70,23 +64,17 @@ export default function FeaturedProductCard({ product }: Props) {
               transform: `translateX(-${currentIndex * 100}%)`,
             }}
           >
-            {images.map((img, i) => {
-              const imageUrl =
-                typeof img === "string"
-                  ? img
-                  : urlFor(img).width(500).height(600).url()
-
-              return (
-                <div key={i} className="relative w-full h-full flex-shrink-0">
-                  <Image
-                    src={imageUrl}
-                    alt={product.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
-              )
-            })}
+            {imageUrls.map((imageUrl, i) => (
+              <div key={i} className="relative w-full h-full flex-shrink-0">
+                <Image
+                  src={imageUrl}
+                  alt={product.title}
+                  fill
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw" // ✅ FIXED
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+            ))}
           </div>
 
           {/* Overlay */}

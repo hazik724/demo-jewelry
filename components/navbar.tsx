@@ -67,7 +67,7 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 bg-[#740A03] text-white flex flex-col items-center justify-center z-40"
+            className="fixed inset-0 bg-[#2FA084] text-white flex flex-col items-center justify-center z-40"
           >
 
             <button

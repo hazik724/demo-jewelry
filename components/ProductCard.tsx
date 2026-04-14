@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { urlFor } from "@/sanity/lib/image"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 
 interface Variant {
   size?: string
@@ -32,18 +32,27 @@ export default function ProductCard({ product }: Props) {
     ? product.images
     : ["/placeholder.png"]
 
-  // 🔥 Auto Slide
+  // ✅ Memoized URLs (BIG win)
+  const imageUrls = useMemo(() => {
+    return images.map((img) =>
+      typeof img === "string"
+        ? img
+        : urlFor(img).width(800).height(1000).url()
+    )
+  }, [images])
+
+  // 🔥 Auto Slide (stable)
   useEffect(() => {
-    if (images.length <= 1) return
+    if (imageUrls.length <= 1) return
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) =>
-        prev === images.length - 1 ? 0 : prev + 1
+        prev === imageUrls.length - 1 ? 0 : prev + 1
       )
     }, 2000)
 
     return () => clearInterval(interval)
-  }, [images.length])
+  }, [imageUrls.length])
 
   return (
     <Link
@@ -59,23 +68,17 @@ export default function ProductCard({ product }: Props) {
             transform: `translateX(-${currentIndex * 100}%)`,
           }}
         >
-          {images.map((img, i) => {
-            const imageUrl =
-              typeof img === "string"
-                ? img
-                : urlFor(img).width(800).height(1000).url()
-
-            return (
-              <div key={i} className="relative w-full h-full flex-shrink-0">
-                <Image
-                  src={imageUrl}
-                  alt={product.title}
-                  fill
-                  className="object-cover transition duration-700 group-hover:scale-[1.03]"
-                />
-              </div>
-            )
-          })}
+          {imageUrls.map((imageUrl, i) => (
+            <div key={i} className="relative w-full h-full flex-shrink-0">
+              <Image
+                src={imageUrl}
+                alt={product.title}
+                fill
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw" // ✅ FIXED
+                className="object-cover transition duration-700 group-hover:scale-[1.03]"
+              />
+            </div>
+          ))}
         </div>
 
       </div>

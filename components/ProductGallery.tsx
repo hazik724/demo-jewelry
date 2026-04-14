@@ -1,19 +1,30 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Image from "next/image"
 import { urlFor } from "@/sanity/lib/image"
 
 export default function ProductGallery({ images }: { images: any[] }) {
   const [selected, setSelected] = useState(0)
 
-  if (!images || images.length === 0) {
-    return (
-      <div className="relative w-full aspect-square bg-neutral-100">
-        <Image src="/placeholder.png" alt="placeholder" fill className="object-cover" />
-      </div>
+  const safeImages = images?.length ? images : ["/placeholder.png"]
+
+  // ✅ Memoized URLs
+  const mainImages = useMemo(() => {
+    return safeImages.map((img) =>
+      typeof img === "string"
+        ? img
+        : urlFor(img).width(1200).url()
     )
-  }
+  }, [safeImages])
+
+  const thumbImages = useMemo(() => {
+    return safeImages.map((img) =>
+      typeof img === "string"
+        ? img
+        : urlFor(img).width(200).url()
+    )
+  }, [safeImages])
 
   return (
     <div className="w-full">
@@ -21,28 +32,30 @@ export default function ProductGallery({ images }: { images: any[] }) {
       {/* MAIN IMAGE */}
       <div className="relative w-full h-[70vh] md:h-auto md:aspect-[4/5] bg-neutral-100 overflow-hidden">
         <Image
-          src={urlFor(images[selected]).width(1200).url()}
+          src={mainImages[selected]}
           alt="product"
           fill
-          priority
+          sizes="(max-width: 768px) 100vw, 50vw" // ✅ FIXED
+          priority={selected === 0} // ✅ only first image priority
           className="object-cover transition duration-500"
         />
       </div>
 
       {/* THUMBNAILS */}
       <div className="flex gap-2 mt-3 overflow-x-auto pb-2">
-        {images.map((img, index) => (
+        {thumbImages.map((img, index) => (
           <button
             key={index}
             onClick={() => setSelected(index)}
-            className={`relative min-w-[65px] h-[65px]  overflow-hidden border ${
+            className={`relative min-w-[65px] h-[65px] overflow-hidden border ${
               selected === index ? "border-black" : "border-neutral-300"
             }`}
           >
             <Image
-              src={urlFor(img).width(200).url()}
+              src={img}
               alt="thumb"
               fill
+              sizes="65px" // ✅ FIXED (small fixed size)
               className="object-cover"
             />
           </button>

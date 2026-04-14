@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { client } from "@/sanity/lib/client"
 import ProductCard from "@/components/ProductCard"
 import ProductFilter, { FiltersState } from "@/components/ProductFilter"
+
 
 interface Variant {
   size?: string
@@ -23,7 +24,6 @@ interface Product {
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [filters, setFilters] = useState<FiltersState>({
     minPrice: 0,
     maxPrice: 10000,
@@ -49,47 +49,46 @@ export default function ProductsPage() {
 
       const result = await client.fetch(query)
       setProducts(result)
-      setFilteredProducts(result)
     }
 
     fetchProducts()
   }, [])
 
-  // Apply Filters + Sorting
-  useEffect(() => {
+  // ✅ Memoized filtering + sorting (BIG improvement)
+  const filteredProducts = useMemo(() => {
     let updated = [...products]
 
-    // Price Filter
+    // Price
     updated = updated.filter(
       (p) =>
         (p.discountPrice ?? p.price) >= filters.minPrice &&
         (p.discountPrice ?? p.price) <= filters.maxPrice
     )
 
-    // Color Filter
+    // Color
     if (filters.colors.length > 0) {
       updated = updated.filter((p) =>
         p.variants?.some((v) => v.color && filters.colors.includes(v.color))
       )
     }
 
-    // Size Filter
+    // Size
     if (filters.sizes.length > 0) {
       updated = updated.filter((p) =>
         p.variants?.some((v) => v.size && filters.sizes.includes(v.size))
       )
     }
 
-    // On Sale Filter
+    // Sale
     if (filters.onSale) {
       updated = updated.filter(
         (p) => p.discountPrice && p.discountPrice < p.price
       )
     }
 
-    // Sorting
+    // Sorting (safe copy)
     if (sortOption === "price-low") {
-      updated.sort(
+      return [...updated].sort(
         (a, b) =>
           (a.discountPrice ?? a.price) -
           (b.discountPrice ?? b.price)
@@ -97,20 +96,20 @@ export default function ProductsPage() {
     }
 
     if (sortOption === "price-high") {
-      updated.sort(
+      return [...updated].sort(
         (a, b) =>
           (b.discountPrice ?? b.price) -
           (a.discountPrice ?? a.price)
       )
     }
 
-    setFilteredProducts(updated)
-  }, [filters, products, sortOption])
+    return updated
+  }, [products, filters, sortOption])
 
   return (
     <div className="max-w-7xl mx-auto px-6 md:px-12 py-20">
 
-      {/* Editorial Header */}
+      {/* Header */}
       <div className="text-center mb-16">
         <h1 className="text-5xl font-light tracking-[0.15em] mb-4">
           COLLECTION
@@ -120,10 +119,9 @@ export default function ProductsPage() {
         </p>
       </div>
 
-      {/* Control Bar */}
+      {/* Controls */}
       <div className="flex justify-between items-center mb-12 border-b pb-6">
 
-        {/* Filter Button */}
         <button
           onClick={() => setIsFilterOpen(true)}
           className="text-sm tracking-widest uppercase hover:opacity-60 transition"
@@ -131,7 +129,6 @@ export default function ProductsPage() {
           Filter
         </button>
 
-        {/* Sort Dropdown */}
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
@@ -143,7 +140,7 @@ export default function ProductsPage() {
         </select>
       </div>
 
-      {/* Product Grid */}
+      {/* Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-10 gap-y-16">
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
@@ -156,18 +153,15 @@ export default function ProductsPage() {
         )}
       </div>
 
-      {/* FILTER DRAWER */}
+      {/* Drawer */}
       {isFilterOpen && (
         <>
-          {/* Overlay */}
           <div
             onClick={() => setIsFilterOpen(false)}
             className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
           />
 
-          {/* Drawer */}
           <div className="fixed top-0 right-0 h-full w-[420px] bg-white z-50 p-12 shadow-2xl overflow-y-auto">
-
             <div className="flex justify-between items-center mb-10">
               <h2 className="text-xl tracking-widest uppercase">
                 Filters
@@ -185,6 +179,5 @@ export default function ProductsPage() {
         </>
       )}
     </div>
-    
   )
 }
