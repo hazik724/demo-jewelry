@@ -9,31 +9,31 @@ import { motion } from "framer-motion"
 const slides = [
   {
     desktop: "/hero/dd1.jpg",
-    mobile: "/hero/mm1.jpg",
+    mobile: "/hero/mobile-1.jfif",
     label: "Luxury Collection",
     headline: "Timeless Gold Elegance",
   },
   {
     desktop: "/hero/dd2.jpg",
-    mobile: "/hero/mmm2.jpg",
+    mobile: "/hero/mobile-2.jfif",
     label: "New Arrival",
     headline: "Diamond Perfection",
   },
   {
     desktop: "/hero/dd3.jpg",
-    mobile: "/hero/mm3.jpg",
+    mobile: "/hero/mobile-3.jpeg",
     label: "Exclusive",
     headline: "Crafted for Royalty",
   },
   {
     desktop: "/hero/dd4.jpg",
-    mobile: "/hero/mm4.jpg",
+    mobile: "/hero/mobile-4.jpeg",
     label: "Trending",
     headline: "Modern Jewelry Icons",
   },
   {
     desktop: "/hero/dd5.jpg",
-    mobile: "/hero/mm5.jpg",
+    mobile: "/hero/mobile-5.jpeg",
     label: "Signature Pieces",
     headline: "Shine with Confidence",
   },

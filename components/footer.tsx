@@ -7,14 +7,14 @@ export default function Footer() {
 
         <div>
           <h2 className="text-xl font-bold mb-4">ZYRA</h2>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-white">
             Premium fashion for modern lifestyle.
           </p>
         </div>
 
         <div>
           <h3 className="font-semibold mb-4">Quick Links</h3>
-          <div className="flex flex-col gap-2 text-sm text-gray-400">
+          <div className="flex flex-col gap-2 text-sm text-white">
             <Link href="/">Home</Link>
             <Link href="/product">Shop</Link>
             <Link href="#">Contact</Link>
@@ -23,7 +23,7 @@ export default function Footer() {
 
         <div>
           <h3 className="font-semibold mb-4">Newsletter</h3>
-          <p className="text-sm text-gray-400 mb-4">
+          <p className="text-sm text-white mb-4">
             Subscribe for latest updates.
           </p>
           <input
@@ -34,7 +34,7 @@ export default function Footer() {
 
       </div>
 
-      <div className="border-t border-gray-800 text-center py-4 text-sm text-gray-500">
+      <div className="border-t border-gray-800 text-center py-4 text-sm text-white">
         © 2026 ZYRA. All rights reserved.
       </div>
     </footer>
