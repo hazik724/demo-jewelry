@@ -33,7 +33,7 @@ const slides = [
   },
   {
     desktop: "/hero/dd5.jpg",
-    mobile: "/hero/Mobile-5.jpeg",
+    mobile: "/hero/last.jpeg",
     label: "Signature Pieces",
     headline: "Shine with Confidence",
   },
