@@ -57,14 +57,12 @@ export default defineType({
             defineField({ name: "title", type: "string", title: "Product Title" }),
             defineField({ name: "price", type: "number", title: "Price" }),
             defineField({ name: "quantity", type: "number", title: "Quantity" }),
-            defineField({ name: "image", type: "image", title: "Product Image" }),
           ],
           preview: {
             select: {
               title: "title",
               quantity: "quantity",
               price: "price",
-              media: "image",
             },
             prepare({ title, quantity, price }) {
               return {

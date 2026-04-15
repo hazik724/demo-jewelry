@@ -35,7 +35,7 @@ Link: ${productUrl || "N/A"}
     <MessageCircle size={22} />
   
     <span className="text-sm font-medium tracking-wide">
-      Craft Your Own
+      Click to customize
     </span>
   </a>
   )

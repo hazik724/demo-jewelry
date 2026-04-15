@@ -6,174 +6,209 @@ import { motion } from "framer-motion"
 
 export default function AboutPage() {
   return (
-    <div className="text-white bg-black">
+    <div className="bg-black text-white overflow-hidden">
 
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center bg-cover bg-center" style={{backgroundImage: "url('https://images.unsplash.com/photo-1520975922284-7b2a1b8d5d05')"}}>
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+      {/* 🌟 HERO SECTION */}
+      <section className="relative h-screen flex items-center justify-center text-center px-6">
+
+        {/* Background Image */}
+        <Image
+          src="https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0"
+          alt="Luxury Jewelry"
+          fill
+          className="object-cover opacity-40 scale-110"
+          priority
+        />
+
+        {/* Glow Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black" />
+
+        {/* Floating Glow */}
+        <div className="absolute w-[600px] h-[600px] bg-[#2FA084]/10 blur-3xl rounded-full animate-pulse" />
+
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="relative text-center px-6"
+          transition={{ duration: 1.2 }}
+          className="relative z-10"
         >
-          <h1 className="text-6xl md:text-8xl font-serif tracking-widest mb-4">ZYRA</h1>
-          <p className="text-gray-300 text-lg md:text-2xl mb-8">
-            Premium Fashion for the Modern Icon
+          <h1 className="text-5xl md:text-7xl font-serif tracking-[0.3em]">
+            JHUMKARA
+          </h1>
+          <p className="mt-4 text-gray-300 text-lg md:text-2xl tracking-wide">
+            by Zyra — Where Heritage Meets Modern Luxury
           </p>
+
           <Link href="/product">
-            <button className="px-8 py-4 bg-gold-500 text-black font-semibold uppercase tracking-widest rounded-2xl shadow-2xl hover:brightness-110 transition">
+            <button className="mt-10 px-10 py-4 border border-[#2FA084] text-[#2FA084] tracking-widest uppercase hover:bg-[#2FA084] hover:text-black transition duration-500 shadow-lg">
               Explore Collection
             </button>
           </Link>
         </motion.div>
       </section>
 
-      {/* Our Story Section */}
-      <section className="max-w-6xl mx-auto py-24 px-6 md:px-12">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="text-center md:text-left space-y-6"
-        >
-          <h2 className="text-4xl md:text-5xl font-serif mb-4">Our Story</h2>
-          <p className="text-gray-400 leading-relaxed text-lg md:text-xl">
-            Founded in 2026, ZYRA is dedicated to redefining modern fashion. Our mission is to craft timeless pieces that embody elegance, confidence, and individuality. From our first collection to today, every design tells a story of sophistication and craftsmanship.
-          </p>
-          <div className="flex justify-center md:justify-start mt-8 gap-6 flex-wrap">
-            <div className="bg-neutral-900 p-6 rounded-2xl border border-gold-500 shadow-xl">
-              <h3 className="text-xl font-semibold">2026</h3>
-              <p className="text-gray-400 text-sm mt-2">ZYRA is founded, crafting first exclusive collection.</p>
-            </div>
-            <div className="bg-neutral-900 p-6 rounded-2xl border border-gold-500 shadow-xl">
-              <h3 className="text-xl font-semibold">2027</h3>
-              <p className="text-gray-400 text-sm mt-2">Introduced sustainable materials in all designs.</p>
-            </div>
-            <div className="bg-neutral-900 p-6 rounded-2xl border border-gold-500 shadow-xl">
-              <h3 className="text-xl font-semibold">2028</h3>
-              <p className="text-gray-400 text-sm mt-2">Expanded to international fashion shows and collaborations.</p>
-            </div>
-          </div>
-        </motion.div>
-      </section>
+      {/* 📖 OUR STORY */}
+      <section className="max-w-6xl mx-auto py-32 px-6 md:px-12 grid md:grid-cols-2 gap-16 items-center">
 
-      {/* Product Philosophy Section */}
-      <section className="bg-neutral-900 py-24 px-6 md:px-12">
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
+          initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center"
+          viewport={{ once: true }}
         >
-          <div>
-            <h2 className="text-4xl font-serif mb-4">Our Philosophy</h2>
-            <p className="text-gray-300 text-lg leading-relaxed">
-              At ZYRA, every garment is carefully designed with attention to detail and premium materials. We believe fashion should empower and inspire. Our collections blend modern aesthetics with timeless craftsmanship, ensuring each piece is a statement of elegance and individuality.
-            </p>
-          </div>
-          <div className="relative h-96 md:h-[400px]">
-            <Image
-              src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246"
-              alt="Product Philosophy"
-              fill
-              className="object-cover rounded-3xl border border-gold-500 shadow-2xl"
-            />
-          </div>
-        </motion.div>
-      </section>
+          <h2 className="text-4xl font-serif mb-6">Our Story</h2>
 
-      {/* Sustainability & Ethics */}
-      <section className="py-24 px-6 md:px-12">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="max-w-6xl mx-auto text-center space-y-8"
-        >
-          <h2 className="text-4xl font-serif">Sustainability & Ethics</h2>
-          <p className="text-gray-400 text-lg leading-relaxed max-w-3xl mx-auto">
-            We are committed to sustainable fashion, ensuring our materials and processes respect the environment. From ethically sourced fabrics to eco-conscious packaging, ZYRA is redefining luxury with responsibility.
+          <p className="text-gray-300 leading-relaxed text-lg">
+            Jhumkara by Zyra was born from a vision to redefine luxury jewelry —
+            blending South Asian heritage with modern elegance. Every piece is
+            handcrafted with precision, emotion, and timeless artistry.
           </p>
-          <div className="flex justify-center gap-8 flex-wrap mt-12">
-            <div className="bg-neutral-900 p-6 rounded-2xl border border-gold-500 shadow-xl">
-              <h3 className="text-xl font-semibold">Ethical</h3>
-              <p className="text-gray-400 text-sm mt-2">Fair labor and responsible practices.</p>
-            </div>
-            <div className="bg-neutral-900 p-6 rounded-2xl border border-gold-500 shadow-xl">
-              <h3 className="text-xl font-semibold">Sustainable</h3>
-              <p className="text-gray-400 text-sm mt-2">Eco-conscious materials and processes.</p>
-            </div>
-            <div className="bg-neutral-900 p-6 rounded-2xl border border-gold-500 shadow-xl">
-              <h3 className="text-xl font-semibold">Premium Quality</h3>
-              <p className="text-gray-400 text-sm mt-2">Luxury craftsmanship in every detail.</p>
-            </div>
+
+          <p className="mt-4 text-gray-400">
+            We don’t just create jewelry. We create identity, presence, and power.
+          </p>
+
+          <div className="mt-10 space-y-4">
+            {[
+              { year: "2026", text: "The birth of Jhumkara by Zyra" },
+              { year: "2027", text: "Crafting signature heritage collection" },
+              { year: "2028", text: "Global recognition in luxury fashion circles" },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ scale: 1.02 }}
+                className="flex justify-between bg-white/5 border border-[#2FA084]/30 p-4 rounded-xl backdrop-blur-md"
+              >
+                <span className="text-[#2FA084]">{item.year}</span>
+                <span className="text-gray-300 text-sm">{item.text}</span>
+              </motion.div>
+            ))}
           </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1 }}
+          viewport={{ once: true }}
+          className="relative h-[500px] rounded-2xl overflow-hidden"
+        >
+          <Image
+            src="/hero/enter.jpeg"
+            alt="Jewelry Craft"
+            fill
+            className="object-cover"
+          />
+         
         </motion.div>
       </section>
 
-      {/* Policies Section */}
-      <section className="bg-neutral-950 py-24 px-6 md:px-12">
-        <motion.div
+      {/* ✨ CRAFTSMANSHIP */}
+      <section className="relative py-32 px-6 md:px-12 bg-neutral-950">
+
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl font-serif mb-6">Craftsmanship</h2>
+            <p className="text-gray-300 leading-relaxed">
+              Each Jhumkara piece is shaped by master artisans using premium
+              materials and traditional techniques refined through generations.
+            </p>
+
+            <p className="mt-4 text-gray-400">
+              Every curve, every detail, every shine — intentionally crafted.
+            </p>
+          </motion.div>
+
+          <motion.div
+            whileInView={{ scale: 1 }}
+            initial={{ scale: 1.1 }}
+            transition={{ duration: 1 }}
+            className="relative h-[420px] rounded-2xl overflow-hidden"
+          >
+            <Image
+              src="https://images.unsplash.com/photo-1617038220319-276d3cfab638"
+              alt="Luxury Craft"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 💎 PHILOSOPHY */}
+      <section className="text-center py-32 px-6">
+
+        <motion.h2
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="max-w-6xl mx-auto text-center space-y-12"
+          className="text-4xl font-serif"
         >
-          <h2 className="text-4xl font-serif">Policies & Customer Info</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-neutral-900 p-6 rounded-2xl border border-gold-500 shadow-xl">
-              <h3 className="text-xl font-semibold mb-2">Privacy Policy</h3>
-              <p className="text-gray-400 text-sm">
-                Your data is safe with us. We never share customer information with third parties.
-              </p>
-            </div>
-            <div className="bg-neutral-900 p-6 rounded-2xl border border-gold-500 shadow-xl">
-              <h3 className="text-xl font-semibold mb-2">Shipping & Returns</h3>
-              <p className="text-gray-400 text-sm">
-                Fast domestic and international shipping. Easy returns within 30 days.
-              </p>
-            </div>
-            <div className="bg-neutral-900 p-6 rounded-2xl border border-gold-500 shadow-xl">
-              <h3 className="text-xl font-semibold mb-2">Terms & Conditions</h3>
-              <p className="text-gray-400 text-sm">
-                Read our terms for purchase, delivery, and usage of ZYRA products.
-              </p>
-            </div>
-          </div>
-        </motion.div>
+          Luxury Philosophy
+        </motion.h2>
+
+        <div className="mt-12 space-y-6 text-xl text-gray-300">
+          <p className="italic">“Luxury is not loud. It is felt.”</p>
+          <p className="italic">“Every piece carries a story.”</p>
+          <p className="italic">“Elegance is power in silence.”</p>
+        </div>
       </section>
 
-      {/* Press & Collaborations */}
-      <section className="py-24 px-6 md:px-12">
+      {/* 🌿 ETHICS */}
+      <section className="py-32 px-6 bg-neutral-950 text-center">
+
+        <h2 className="text-4xl font-serif mb-12">Ethics & Sustainability</h2>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+
+          {[
+            { title: "Ethical Sourcing", desc: "Responsibly selected materials." },
+            { title: "Handcrafted", desc: "Artisan-led creation process." },
+            { title: "Timeless Quality", desc: "Built to last generations." },
+          ].map((item, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ y: -5 }}
+              className="bg-white/5 border border-[#2FA084]/20 p-6 rounded-2xl backdrop-blur-md"
+            >
+              <h3 className="text-[#2FA084] text-xl mb-2">{item.title}</h3>
+              <p className="text-gray-400 text-sm">{item.desc}</p>
+            </motion.div>
+          ))}
+
+        </div>
+      </section>
+
+     
+
+      {/* 🔥 FINAL CTA */}
+      <section className="relative py-40 text-center">
+
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-[#2FA084]/10 to-black" />
+
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="max-w-6xl mx-auto text-center space-y-12"
+          className="relative"
         >
-          <h2 className="text-4xl font-serif">Press & Collaborations</h2>
-          <div className="flex justify-center gap-12 flex-wrap mt-8">
-            <Image src="https://upload.wikimedia.org/wikipedia/commons/0/03/Vogue_logo.svg" alt="Vogue" width={120} height={40} />
-            <Image src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Elle_logo.svg" alt="Elle" width={120} height={40} />
-            <Image src="https://upload.wikimedia.org/wikipedia/commons/3/3b/Harper%27s_Bazaar_logo.svg" alt="Harper's Bazaar" width={120} height={40} />
-          </div>
-        </motion.div>
-      </section>
+          <h2 className="text-4xl font-serif mb-6">
+            Adorn yourself in timeless elegance.
+          </h2>
 
-      {/* Final CTA */}
-      <section className="bg-black py-24 px-6 text-center">
-        <h2 className="text-4xl font-serif mb-6">Experience Luxury with ZYRA</h2>
-        <Link href="/product">
-          <button className="px-10 py-4 bg-gold-500 text-black font-semibold uppercase tracking-widest rounded-2xl shadow-2xl hover:brightness-110 transition">
-            Shop the Collection
-          </button>
-        </Link>
+          <Link href="/product">
+            <button className="px-10 py-4 border border-[#2FA084] text-[#2FA084] uppercase tracking-widest hover:bg-[#2FA084] hover:text-black transition duration-500">
+              Discover Jhumkara
+            </button>
+          </Link>
+        </motion.div>
       </section>
 
     </div>

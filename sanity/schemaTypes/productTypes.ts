@@ -57,20 +57,7 @@ export const productType = defineType({
       validation: (rule) => rule.min(0),
     }),
 
-    // Inventory
-    defineField({
-      name: 'stock',
-      title: 'Stock Quantity',
-      type: 'number',
-      validation: (rule) => rule.required().min(0),
-    }),
-
-    defineField({
-      name: 'inStock',
-      title: 'In Stock',
-      type: 'boolean',
-      initialValue: true,
-    }),
+    
 
     // Categories (multiple)
     defineField({
@@ -80,34 +67,6 @@ export const productType = defineType({
       of: [{ type: 'reference', to: [{ type: 'category' }] }],
     }),
 
-    // Variants (sizes / colors)
-    defineField({
-      name: 'variants',
-      title: 'Variants',
-      type: 'array',
-      of: [
-        {
-          type: 'object',
-          fields: [
-            defineField({
-              name: 'size',
-              title: 'Size',
-              type: 'string',
-            }),
-            defineField({
-              name: 'color',
-              title: 'Color',
-              type: 'string',
-            }),
-            defineField({
-              name: 'variantStock',
-              title: 'Variant Stock',
-              type: 'number',
-              validation: (rule) => rule.min(0),
-            }),
-          ],
-        },
-      ],
-    }),
+   
   ],
 })

@@ -88,7 +88,7 @@ export default function PremiumTrustSection() {
               transition={{ delay: i * 0.2, duration: 0.5 }}
               className="flex flex-col items-center"
             >
-              <h3 className="text-3xl md:text-4xl font-semibold ">
+              <h3 className="text-3xl text-[#2FA084] md:text-4xl font-semibold ">
                 {item.value}
               </h3>
               <p className="text-gray-500 mt-3 text-sm tracking-wide">
