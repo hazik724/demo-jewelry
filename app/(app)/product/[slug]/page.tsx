@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import { client } from "@/sanity/lib/client"
-import Image from "next/image"
 import { urlFor } from "@/sanity/lib/image"
 import CartButton from "./CartButton"
 import ProductGallery from "@/components/ProductGallery"
 import FeaturedProducts from "@/components/featuredProducts"
 import WhatsAppProductButton from "@/components/ProductWhatsapp"
+import PremiumTrustSection from "@/components/TrustSection"
 
 async function getProduct(slug: string) {
   const query = `*[_type == "product" && slug.current == $slug][0]{
@@ -186,6 +186,7 @@ export default async function Page({
 
       {/* Related Products */}
       <FeaturedProducts />
+      <PremiumTrustSection/>
     </div>
   )
 }
