@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     siteName: "Jhumkara",
     images: [
       {
-        url: "/og-image.jpg", // add this image in public folder
+        url: "https://jhumkara.com/og-image.jpg", // 🔥 FULL URL REQUIRED
         width: 1200,
         height: 630,
         alt: "Jhumkara Jewelry Collection",

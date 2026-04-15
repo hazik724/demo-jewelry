@@ -13,7 +13,7 @@ export default function WhatsAppProductButton({
   productUrl,
   price,
 }: Props) {
-  const phoneNumber = "923173890580"
+  const phoneNumber = "923083366699"
 
   const message = `
 Hi I want to coustomize this product:
