@@ -88,7 +88,7 @@ export default function FeaturedProducts() {
         <div className="text-center mt-12">
           <a
             href="/product"
-            className="inline-block border border-black px-10 py-3 text-sm uppercase tracking-widest hover:bg-black hover:text-white transition"
+            className="inline-block border border-black px-10 py-3 text-sm uppercase tracking-widest hover:bg-[#2FA084] hover:text-white transition"
             aria-label="View all jewelry products"
           >
             View All Products

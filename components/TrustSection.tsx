@@ -36,7 +36,7 @@ export default function PremiumTrustSection() {
           </div>
 
           <p className="mt-6 text-xs tracking-[0.5em] text-gray-400 uppercase">
-            JHUMKARA BY ZYRA
+            JHUMKAARA BY ZYRA
           </p>
         </motion.div>
 
