@@ -64,7 +64,7 @@ export default function CartPage() {
                       {item.title}
                     </h2>
 
-                    <p className="text-red-600 font-semibold text-lg mb-4">
+                    <p className="text-[#2FA084] font-semibold text-lg mb-4">
                       PKR {item.price.toFixed(2)}
                     </p>
 
@@ -116,7 +116,7 @@ export default function CartPage() {
 
           <div className="flex justify-between mb-4 text-lg">
             <span>Shipping</span>
-            <span className="text-green-600 font-semibold">Free</span>
+            <span className="text-[#2FA084] font-semibold">Free</span>
           </div>
 
           <div className="flex justify-between mb-8 text-xl font-bold border-t pt-4 border-gray-300">
@@ -126,13 +126,13 @@ export default function CartPage() {
 
           <Link
             href="/checkout"
-            className="block text-center bg-black text-white py-4 rounded-lg tracking-widest uppercase hover:bg-white hover:text-black transition duration-300"
+            className="block text-center bg-[#2FA084] text-white py-4 rounded-lg tracking-widest uppercase hover:bg-white hover:text-black transition duration-300"
           >
             Proceed to Checkout
           </Link>
 
           <p className="text-sm text-gray-400 mt-4 text-center">
-            Secure Checkout • COD & Online Payment
+            Secure Checkout • COD 
           </p>
         </div>
         

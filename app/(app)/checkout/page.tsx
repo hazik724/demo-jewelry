@@ -119,7 +119,7 @@ setErrors({})
       </div>
     
       {/* Title */}
-      <h2 className="text-4xl md:text-5xl font-serif tracking-wide mb-4 text-white">
+      <h2 className="text-4xl md:text-5xl font-light tracking-wide mb-4 text-black">
         Your Bag is Empty
       </h2>
     
@@ -131,7 +131,7 @@ setErrors({})
     
       {/* Button */}
       <Link href="/product">
-        <button className="group relative overflow-hidden bg-white text-black uppercase tracking-widest font-semibold py-4 px-10 rounded-2xl shadow-2xl transition-all duration-300">
+        <button className="group relative overflow-hidden bg-[#2FA084] text-white uppercase tracking-widest font-semibold py-4 px-10 rounded-2xl shadow-2xl transition-all duration-300">
     
           <span className="relative z-10">Browse Products</span>
     
@@ -158,10 +158,10 @@ setErrors({})
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-black/50 backdrop-blur-md p-8 rounded-3xl shadow-2xl space-y-8 border border-gold-500"
+          className="bg-black/50 backdrop-blur-md p-8  shadow-2xl space-y-8 border border-[#2FA084]"
         >
 
-          <h2 className="text-2xl font-light border-b border-gold-500 pb-2">
+          <h2 className="text-2xl font-light border-b border-[#2FA084] pb-2">
             Shipping Details
           </h2>
 
@@ -234,7 +234,7 @@ setErrors({})
             </h3>
 
             <div className="flex items-center gap-2">
-              <input type="radio" checked readOnly className="accent-gold-500" />
+              <input type="radio" checked readOnly className="accent-[#2FA084]" />
               <span>Cash on Delivery</span>
             </div>
           </div>
@@ -247,10 +247,10 @@ setErrors({})
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="bg-black/50 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-gold-500 flex flex-col space-y-6"
+          className="bg-black/50 backdrop-blur-md p-8  shadow-2xl border border-[#2FA084] flex flex-col space-y-6"
         >
 
-          <h2 className="text-2xl font-light border-b border-gold-500 pb-2">
+          <h2 className="text-2xl font-light border-b border-[#2FA084] pb-2">
             Order Summary
           </h2>
 
@@ -292,7 +292,7 @@ setErrors({})
             disabled={loading || success}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-4 bg-white text-black font-light text-lg rounded-2xl uppercase tracking-widest hover:brightness-110 transition"
+            className="w-full py-4 bg-[#2FA084] text-white font-light text-lg rounded-2xl uppercase tracking-widest hover:brightness-110 transition"
           >
             {loading ? "Processing..." : success ? "Order Placed!" : "Place Order"}
           </motion.button>
