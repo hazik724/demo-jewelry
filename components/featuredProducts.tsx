@@ -36,31 +36,65 @@ export default function FeaturedProducts() {
     fetchProducts()
   }, [])
 
-  // Skeleton Loader Component
   const SkeletonCard = () => (
-    <div className="bg-black/10 dark:bg-gray-800 rounded-lg overflow-hidden animate-pulse h-[400px] flex flex-col justify-between">
-      <div className="bg-black/20 dark:bg-gray-700 h-64 w-full mb-4" />
-      <div className="px-4 pb-4 space-y-2">
-        <div className="h-6 bg-black/20 dark:bg-gray-700 rounded w-3/4" />
-        <div className="h-4 bg-black/20 dark:bg-gray-700 rounded w-1/2" />
-        <div className="h-10 bg-black/20 dark:bg-gray-700 rounded w-full mt-4" />
-      </div>
-    </div>
+    <div className="bg-black/10 dark:bg-gray-800 rounded-lg overflow-hidden animate-pulse h-[400px]" />
   )
 
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-8 py-16">
-      <h2 className="text-3xl md:text-5xl font-light tracking-wide leading-tight text-center mb-16 tracking-tight">
-        New Arrivals
-      </h2>
+    <section
+      className="max-w-7xl mx-auto px-4 md:px-8 py-16"
+      aria-labelledby="featured-products-heading"
+    >
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {loading
-          ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
-          : products.map((product) => (
-              <FeaturedProductCard key={product._id} product={product} />
-            ))}
+      {/* 🔥 SEO Hidden Content */}
+      <div className="sr-only">
+        <h2>Buy Latest Jewelry Online in Pakistan - Jhumkara by Zyra</h2>
+        <p>
+          Explore our newest collection of earrings, necklaces, rings, and
+          premium accessories crafted for elegance and modern style.
+        </p>
       </div>
+
+      {/* Visible Heading */}
+      <header>
+        <h2
+          id="featured-products-heading"
+          className="text-3xl md:text-5xl font-light text-center mb-16 tracking-tight"
+        >
+          New Arrivals Jewelry Collection
+        </h2>
+      </header>
+
+      {/* Product Grid as LIST (important for SEO) */}
+      <ul
+        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+        role="list"
+      >
+        {loading
+          ? Array.from({ length: 8 }).map((_, i) => (
+              <li key={i}>
+                <SkeletonCard />
+              </li>
+            ))
+          : products.map((product) => (
+              <li key={product._id}>
+                <FeaturedProductCard product={product} />
+              </li>
+            ))}
+      </ul>
+
+      {/* 🔥 Internal Linking Boost */}
+      {!loading && products.length > 0 && (
+        <div className="text-center mt-12">
+          <a
+            href="/product"
+            className="inline-block border border-black px-10 py-3 text-sm uppercase tracking-widest hover:bg-black hover:text-white transition"
+            aria-label="View all jewelry products"
+          >
+            View All Products
+          </a>
+        </div>
+      )}
     </section>
   )
 }

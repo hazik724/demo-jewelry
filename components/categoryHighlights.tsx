@@ -39,7 +39,6 @@ export default function CategoryHighlight() {
     }
   }, [])
 
-  // ✅ Memoize image URLs
   const categoryData = useMemo(() => {
     return categories.map((category) => ({
       ...category,
@@ -50,11 +49,24 @@ export default function CategoryHighlight() {
   }, [categories])
 
   return (
-    <section className="bg-[#2FA084] text-white py-32">
+    <section
+      className="bg-[#2FA084] text-white py-32"
+      aria-label="Shop jewelry categories"
+    >
+
+      {/* 🔥 SEO Hidden Content */}
+      <div className="sr-only">
+        <h2>Shop Jewelry Categories in Pakistan</h2>
+        <p>
+          Explore rings, earrings, necklaces, and handmade jewelry collections
+          at Jhumkara by Zyra. Find premium and affordable jewelry online.
+        </p>
+      </div>
+
       <div className="max-w-7xl mx-auto px-6 md:px-12">
 
         {/* Title */}
-        <motion.div
+        <motion.header
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
@@ -66,31 +78,34 @@ export default function CategoryHighlight() {
           </p>
 
           <h2 className="text-3xl md:text-5xl font-light tracking-wide">
-            Shop by Category
+            Shop by Jewelry Category
           </h2>
-        </motion.div>
+        </motion.header>
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
 
           {categoryData.map((category, index) => (
-            <motion.div
+            <motion.article
               key={category.slug.current}
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: index * 0.2 }}
               viewport={{ once: true }}
             >
+
               <Link
                 href={`/category/${category.slug.current}`}
                 className="group relative block h-[520px] overflow-hidden"
+                aria-label={`View ${category.title} jewelry category`}
               >
+
                 {/* Image */}
                 <Image
                   src={category.imageUrl}
-                  alt={category.title}
+                  alt={`${category.title} jewelry collection in Pakistan`}
                   fill
-                  sizes="(max-width: 768px) 100vw, 33vw" // ✅ FIXED
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-110"
                 />
 
@@ -104,11 +119,11 @@ export default function CategoryHighlight() {
                   </h3>
                 </div>
 
-                {/* Line */}
+                {/* Hover line */}
                 <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-white transition-all duration-500 group-hover:w-24"></div>
 
               </Link>
-            </motion.div>
+            </motion.article>
           ))}
 
         </div>

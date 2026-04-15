@@ -5,7 +5,6 @@ import { client } from "@/sanity/lib/client"
 import ProductCard from "@/components/ProductCard"
 import ProductFilter, { FiltersState } from "@/components/ProductFilter"
 
-
 interface Variant {
   size?: string
   color?: string
@@ -34,7 +33,6 @@ export default function ProductsPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [sortOption, setSortOption] = useState("newest")
 
-  // Fetch Products
   useEffect(() => {
     const fetchProducts = async () => {
       const query = `*[_type == "product"] | order(_createdAt desc){
@@ -54,39 +52,33 @@ export default function ProductsPage() {
     fetchProducts()
   }, [])
 
-  // ✅ Memoized filtering + sorting (BIG improvement)
   const filteredProducts = useMemo(() => {
     let updated = [...products]
 
-    // Price
     updated = updated.filter(
       (p) =>
         (p.discountPrice ?? p.price) >= filters.minPrice &&
         (p.discountPrice ?? p.price) <= filters.maxPrice
     )
 
-    // Color
     if (filters.colors.length > 0) {
       updated = updated.filter((p) =>
         p.variants?.some((v) => v.color && filters.colors.includes(v.color))
       )
     }
 
-    // Size
     if (filters.sizes.length > 0) {
       updated = updated.filter((p) =>
         p.variants?.some((v) => v.size && filters.sizes.includes(v.size))
       )
     }
 
-    // Sale
     if (filters.onSale) {
       updated = updated.filter(
         (p) => p.discountPrice && p.discountPrice < p.price
       )
     }
 
-    // Sorting (safe copy)
     if (sortOption === "price-low") {
       return [...updated].sort(
         (a, b) =>
@@ -107,24 +99,38 @@ export default function ProductsPage() {
   }, [products, filters, sortOption])
 
   return (
-    <div className="max-w-7xl mx-auto px-6 md:px-12 py-20">
+    <main className="max-w-7xl mx-auto px-6 md:px-12 py-20">
 
-      {/* Header */}
-      <div className="text-center mb-16">
-        <h1 className="text-5xl font-light tracking-[0.15em] mb-4">
-          COLLECTION
-        </h1>
-        <p className="text-sm text-gray-500 tracking-widest uppercase">
-          {filteredProducts.length} Pieces
+      {/* 🔥 Hidden SEO Content */}
+      <div className="sr-only">
+        <h1>Buy Jewelry Online in Pakistan - Jhumkara by Zyra</h1>
+        <p>
+          Shop earrings, necklaces, rings, and premium accessories at
+          Jhumkara. Explore affordable and luxury jewelry collections.
         </p>
       </div>
 
+      {/* Header */}
+      <header className="text-center mb-16">
+        <h1 className="text-5xl font-light tracking-[0.15em] mb-4">
+          Jewelry Collection
+        </h1>
+
+        <p className="text-sm text-gray-500 tracking-widest uppercase">
+          {filteredProducts.length} Pieces Available
+        </p>
+      </header>
+
       {/* Controls */}
-      <div className="flex justify-between items-center mb-12 border-b pb-6">
+      <section
+        className="flex justify-between items-center mb-12 border-b pb-6"
+        aria-label="Product filters and sorting"
+      >
 
         <button
           onClick={() => setIsFilterOpen(true)}
           className="text-sm tracking-widest uppercase hover:opacity-60 transition"
+          aria-label="Open product filters"
         >
           Filter
         </button>
@@ -133,27 +139,32 @@ export default function ProductsPage() {
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
           className="text-sm tracking-widest uppercase bg-transparent outline-none"
+          aria-label="Sort products"
         >
           <option value="newest">Newest</option>
           <option value="price-low">Price: Low to High</option>
           <option value="price-high">Price: High to Low</option>
         </select>
-      </div>
+      </section>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-10 gap-y-16">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))
-        ) : (
-          <p className="col-span-full text-center text-gray-400">
-            No products found.
-          </p>
-        )}
-      </div>
+      {/* Product Grid as LIST */}
+      <section aria-label="All jewelry products">
+        <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-10 gap-y-16">
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <li key={product._id}>
+                <ProductCard product={product} />
+              </li>
+            ))
+          ) : (
+            <li className="col-span-full text-center text-gray-400">
+              No products found.
+            </li>
+          )}
+        </ul>
+      </section>
 
-      {/* Drawer */}
+      {/* Filter Drawer */}
       {isFilterOpen && (
         <>
           <div
@@ -161,7 +172,10 @@ export default function ProductsPage() {
             className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
           />
 
-          <div className="fixed top-0 right-0 h-full w-[420px] bg-white z-50 p-12 shadow-2xl overflow-y-auto">
+          <aside
+            className="fixed top-0 right-0 h-full w-[420px] bg-white z-50 p-12 shadow-2xl overflow-y-auto"
+            aria-label="Product filters panel"
+          >
             <div className="flex justify-between items-center mb-10">
               <h2 className="text-xl tracking-widest uppercase">
                 Filters
@@ -169,15 +183,16 @@ export default function ProductsPage() {
               <button
                 onClick={() => setIsFilterOpen(false)}
                 className="text-xs tracking-widest uppercase hover:opacity-60"
+                aria-label="Close filters"
               >
                 Close
               </button>
             </div>
 
             <ProductFilter applyFilters={(f) => setFilters(f)} />
-          </div>
+          </aside>
         </>
       )}
-    </div>
+    </main>
   )
 }
