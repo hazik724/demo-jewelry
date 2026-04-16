@@ -30,6 +30,9 @@ export default function CartPage() {
     )
   }
 
+const shippingFee = 300
+const finalTotal = totalPrice + shippingFee
+
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-20">
       <h1 className="text-5xl font-light mb-16 tracking-tight text-center">
@@ -116,12 +119,12 @@ export default function CartPage() {
 
           <div className="flex justify-between mb-4 text-lg">
             <span>Shipping</span>
-            <span className="text-[#2FA084] font-semibold">Free</span>
+           <span className="text-[#2FA084] font-semibold">PKR {shippingFee}</span>
           </div>
 
           <div className="flex justify-between mb-8 text-xl font-bold border-t pt-4 border-gray-300">
             <span>Total</span>
-            <span>PKR {totalPrice.toFixed(2)}</span>
+            <span>PKR {finalTotal.toFixed(2)}</span>
           </div>
 
           <Link

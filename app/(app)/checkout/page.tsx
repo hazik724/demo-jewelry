@@ -29,6 +29,8 @@ export default function CheckoutPage() {
   const [success, setSuccess] = useState(false)
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const shippingFee = 300
+const finalTotal = total + shippingFee
 
   const handleChange = (e: any) =>
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -79,7 +81,8 @@ setErrors({})
             image: item.image,
           })),
 
-          totalAmount: total,
+          totalAmount: finalTotal,
+          
         }),
       })
 
@@ -282,10 +285,26 @@ setErrors({})
 
           </div>
 
-          <div className="border-t border-gold-500 pt-4 flex justify-between font-semibold text-lg">
-            <span>Total</span>
-            <span>PKR {total.toFixed(2)}</span>
-          </div>
+        <div className="space-y-3 border-t border-gold-500 pt-4 text-lg">
+
+  <div className="flex justify-between">
+    <span>Subtotal</span>
+    <span>PKR {total.toFixed(2)}</span>
+  </div>
+
+  <div className="flex justify-between">
+    <span>Shipping</span>
+    <span className="text-[#2FA084] font-semibold">
+      PKR {shippingFee}
+    </span>
+  </div>
+
+  <div className="flex justify-between font-bold text-xl border-t border-white/20 pt-3">
+    <span>Total</span>
+    <span>PKR {finalTotal.toFixed(2)}</span>
+  </div>
+
+</div>
 
           <motion.button
             onClick={handleOrder}
