@@ -97,10 +97,25 @@ export default function ProductsPage() {
 
     return updated
   }, [products, filters, sortOption])
-
+const productListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  itemListElement: filteredProducts.map((product, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    url: `https://jhumkara.com/product/${product.slug.current}`,
+    name: product.title,
+  })),
+}
   return (
+    
     <main className="max-w-7xl mx-auto px-6 md:px-12 py-20">
-
+<script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify(productListSchema),
+  }}
+/>
       {/* 🔥 Hidden SEO Content */}
       <div className="sr-only">
         <h1>Buy Jewelry Online in Pakistan - Jhumkara by Zyra</h1>
