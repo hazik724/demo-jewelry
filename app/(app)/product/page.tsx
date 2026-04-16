@@ -1,213 +1,101 @@
-"use client"
+import ProductsClient from "./ProductsClient"
+import type { Metadata } from "next"
 
-import { useEffect, useState, useMemo } from "react"
-import { client } from "@/sanity/lib/client"
-import ProductCard from "@/components/ProductCard"
-import ProductFilter, { FiltersState } from "@/components/ProductFilter"
+/* ---------------- SEO METADATA (UPGRADED) ---------------- */
+export const metadata: Metadata = {
+  title: "Buy Jewelry Online in Pakistan | Jhumkara by Zyra",
+  description:
+    "Explore premium handcrafted jewelry in Pakistan including bridal jewelry, earrings, rings, necklaces, and luxury accessories. Shop online with cash on delivery and affordable prices.",
 
-interface Variant {
-  size?: string
-  color?: string
-  variantStock?: number
+  alternates: {
+    canonical: "https://jhumkara.com/products",
+  },
+
+  openGraph: {
+    title: "Jewelry Collection | Jhumkara by Zyra",
+    description:
+      "Premium handcrafted jewelry collection in Pakistan. Explore earrings, rings, necklaces, and luxury fashion pieces.",
+    url: "https://jhumkara.com/products",
+    siteName: "Jhumkara by Zyra",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Jewelry Collection Pakistan | Jhumkara",
+    description:
+      "Shop premium handcrafted jewelry online in Pakistan with cash on delivery.",
+  },
 }
 
-interface Product {
-  _id: string
-  title: string
-  slug: { current: string }
-  images: any[]
-  price: number
-  discountPrice?: number
-  variants?: Variant[]
-}
-
-export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [filters, setFilters] = useState<FiltersState>({
-    minPrice: 0,
-    maxPrice: 10000,
-    colors: [],
-    sizes: [],
-    onSale: false,
-  })
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [sortOption, setSortOption] = useState("newest")
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const query = `*[_type == "product"] | order(_createdAt desc){
-        _id,
-        title,
-        slug,
-        images,
-        price,
-        discountPrice,
-        variants
-      }`
-
-      const result = await client.fetch(query)
-      setProducts(result)
-    }
-
-    fetchProducts()
-  }, [])
-
-  const filteredProducts = useMemo(() => {
-    let updated = [...products]
-
-    updated = updated.filter(
-      (p) =>
-        (p.discountPrice ?? p.price) >= filters.minPrice &&
-        (p.discountPrice ?? p.price) <= filters.maxPrice
-    )
-
-    if (filters.colors.length > 0) {
-      updated = updated.filter((p) =>
-        p.variants?.some((v) => v.color && filters.colors.includes(v.color))
-      )
-    }
-
-    if (filters.sizes.length > 0) {
-      updated = updated.filter((p) =>
-        p.variants?.some((v) => v.size && filters.sizes.includes(v.size))
-      )
-    }
-
-    if (filters.onSale) {
-      updated = updated.filter(
-        (p) => p.discountPrice && p.discountPrice < p.price
-      )
-    }
-
-    if (sortOption === "price-low") {
-      return [...updated].sort(
-        (a, b) =>
-          (a.discountPrice ?? a.price) -
-          (b.discountPrice ?? b.price)
-      )
-    }
-
-    if (sortOption === "price-high") {
-      return [...updated].sort(
-        (a, b) =>
-          (b.discountPrice ?? b.price) -
-          (a.discountPrice ?? a.price)
-      )
-    }
-
-    return updated
-  }, [products, filters, sortOption])
-const productListSchema = {
+/* ---------------- STRUCTURED DATA (SEO POWER BOOST) ---------------- */
+const schema = {
   "@context": "https://schema.org",
-  "@type": "ItemList",
-  itemListElement: filteredProducts.map((product, index) => ({
-    "@type": "ListItem",
-    position: index + 1,
-    url: `https://jhumkara.com/product/${product.slug.current}`,
-    name: product.title,
-  })),
+  "@type": "CollectionPage",
+  name: "Jewelry Collection Pakistan",
+  description:
+    "Premium handcrafted jewelry collection in Pakistan by Jhumkara by Zyra.",
+  url: "https://jhumkara.com/products",
+  mainEntity: {
+    "@type": "ItemList",
+    name: "Jewelry Products",
+  },
 }
+
+/* ---------------- OPTIONAL FAQ SCHEMA (RICH RESULTS BOOST) ---------------- */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Do you offer cash on delivery in Pakistan?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, we offer cash on delivery across Pakistan.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Is your jewelry handmade?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, all our jewelry is handcrafted with premium materials.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What type of jewelry do you sell?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "We sell earrings, rings, necklaces, bridal jewelry, and luxury accessories.",
+      },
+    },
+  ],
+}
+
+/* ---------------- PAGE ---------------- */
+export default function Page() {
   return (
-    
-    <main className="max-w-7xl mx-auto px-6 md:px-12 py-20">
-<script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{
-    __html: JSON.stringify(productListSchema),
-  }}
-/>
-      {/* 🔥 Hidden SEO Content */}
-      <div className="sr-only">
-        <h1>Buy Jewelry Online in Pakistan - Jhumkara by Zyra</h1>
-        <p>
-          Shop earrings, necklaces, rings, and premium accessories at
-          Jhumkara. Explore affordable and luxury jewelry collections.
-        </p>
-      </div>
+    <>
+      {/* JSON-LD STRUCTURED DATA */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(schema),
+        }}
+      />
 
-      {/* Header */}
-      <header className="text-center mb-16">
-        <h1 className="text-5xl font-light tracking-[0.15em] mb-4">
-          Jewelry Collection
-        </h1>
+      {/* FAQ SCHEMA */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqSchema),
+        }}
+      />
 
-        <p className="text-sm text-gray-500 tracking-widest uppercase">
-          {filteredProducts.length} Pieces Available
-        </p>
-      </header>
-
-      {/* Controls */}
-      <section
-        className="flex justify-between items-center mb-12 border-b pb-6"
-        aria-label="Product filters and sorting"
-      >
-
-        <button
-          onClick={() => setIsFilterOpen(true)}
-          className="text-sm tracking-widest uppercase hover:opacity-60 transition"
-          aria-label="Open product filters"
-        >
-          Filter
-        </button>
-
-        <select
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-          className="text-sm tracking-widest uppercase bg-transparent outline-none"
-          aria-label="Sort products"
-        >
-          <option value="newest">Newest</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-        </select>
-      </section>
-
-      {/* Product Grid as LIST */}
-      <section aria-label="All jewelry products">
-        <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-10 gap-y-16">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <li key={product._id}>
-                <ProductCard product={product} />
-              </li>
-            ))
-          ) : (
-            <li className="col-span-full text-center text-gray-400">
-              No products found.
-            </li>
-          )}
-        </ul>
-      </section>
-
-      {/* Filter Drawer */}
-      {isFilterOpen && (
-        <>
-          <div
-            onClick={() => setIsFilterOpen(false)}
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
-          />
-
-          <aside
-            className="fixed top-0 right-0 h-full w-[420px] bg-white z-50 p-12 shadow-2xl overflow-y-auto"
-            aria-label="Product filters panel"
-          >
-            <div className="flex justify-between items-center mb-10">
-              <h2 className="text-xl tracking-widest uppercase">
-                Filters
-              </h2>
-              <button
-                onClick={() => setIsFilterOpen(false)}
-                className="text-xs tracking-widest uppercase hover:opacity-60"
-                aria-label="Close filters"
-              >
-                Close
-              </button>
-            </div>
-
-            <ProductFilter applyFilters={(f) => setFilters(f)} />
-          </aside>
-        </>
-      )}
-    </main>
+      {/* MAIN CLIENT PAGE */}
+      <ProductsClient />
+    </>
   )
 }

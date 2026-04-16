@@ -95,8 +95,8 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-white/20 text-center py-4 text-sm text-white/80">
-        © 2026 ZYRA. All rights reserved.
-      </div>
+  © 2026 ZYRA. All rights reserved. A custom website designed & developed by Asavera.ltd for ZYRA.
+</div>
     </footer>
   )
 }

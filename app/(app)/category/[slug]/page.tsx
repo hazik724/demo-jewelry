@@ -11,21 +11,29 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
 
-  return {
-    title: `${slug} Jewelry Collection | Buy Online Pakistan`,
-    description: `Shop ${slug} jewelry collection in Pakistan. Find premium quality rings, earrings, necklaces and more at best prices.`,
+  const formattedSlug = slug.replace("-", " ")
 
-    alternates: {
-      canonical: `https://jhumkara.com/category/${slug}`,
-    },
+return {
+  title: `${formattedSlug} Jewelry Collection in Pakistan | Jhumkara by Zyra`,
+  description: `Shop premium ${formattedSlug} jewelry in Pakistan. Discover handcrafted earrings, rings, necklaces with elegant designs. Cash on delivery available.`,
 
-    openGraph: {
-      title: `${slug} Jewelry Collection`,
-      description: `Explore ${slug} jewelry collection at best prices in Pakistan.`,
-      url: `https://jhumkara.com/category/${slug}`,
-      type: "website",
-    },
-  }
+  alternates: {
+    canonical: `https://jhumkara.com/category/${slug}`,
+  },
+
+  openGraph: {
+    title: `${formattedSlug} Jewelry Collection`,
+    description: `Explore premium ${formattedSlug} jewelry at Jhumkara by Zyra.`,
+    url: `https://jhumkara.com/category/${slug}`,
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: `${formattedSlug} Jewelry Collection`,
+    description: `Shop ${formattedSlug} jewelry online in Pakistan.`,
+  },
+}
 }
 
 /* ---------------- PAGE ---------------- */
@@ -53,18 +61,30 @@ export default async function CategoryPage({
   }`
 
   const products = await client.fetch(query, { slug })
-
+const itemListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  itemListElement: products.map((product: any, index: number) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    url: `https://jhumkara.com/product/${product.slug.current}`,
+    name: product.title,
+  })),
+}
   return (
     <main className="max-w-7xl mx-auto px-4 md:px-8 py-16">
+      <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify(itemListSchema),
+  }}
+/>
 
       {/* 🔥 Hidden SEO Content */}
-      <div className="sr-only">
-        <h1>{slug} Jewelry Collection in Pakistan</h1>
-        <p>
-          Explore premium {slug} jewelry including earrings, rings, necklaces,
-          and handmade accessories by Jhumkara by Zyra.
-        </p>
-      </div>
+     <p className="text-gray-500 max-w-2xl">
+  Explore our premium {slug} jewelry collection featuring handcrafted
+  earrings, rings, and necklaces designed for elegance and everyday luxury.
+</p>
 
       {/* Category Header */}
       <header className="flex flex-col md:flex-row md:items-center md:justify-between mb-12 gap-6">
