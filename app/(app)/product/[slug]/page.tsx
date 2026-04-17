@@ -6,6 +6,7 @@ import ProductGallery from "@/components/ProductGallery"
 import FeaturedProducts from "@/components/featuredProducts"
 import WhatsAppProductButton from "@/components/ProductWhatsapp"
 import PremiumTrustSection from "@/components/TrustSection"
+import CategoryLink from "@/components/CategoryLink"
 
 async function getProduct(slug: string) {
   const query = `*[_type == "product" && slug.current == $slug][0]{
@@ -215,7 +216,9 @@ export default async function Page({
 
       {/* Related Products */}
       <FeaturedProducts />
+      <CategoryLink/>
       <PremiumTrustSection/>
+
     </div>
   )
 }

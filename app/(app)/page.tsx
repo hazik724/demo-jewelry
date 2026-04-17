@@ -5,6 +5,7 @@ import HeroCrousal from "@/components/heroCrousal"
 import PremiumTextSlider from "@/components/PremiumTextSlider"
 import TrustSection from "@/components/TrustSection"
 import BgImage from "@/components/BgImage"
+import CategoryLinks from "@/components/CategoryLink"
 
 export default async function HomePage(
   ){
@@ -18,6 +19,7 @@ export default async function HomePage(
   <PremiumTextSlider/>
   <BgImage/>
   <FeaturedProducts/>
+  <CategoryLinks  />
 
     </div>
   )
