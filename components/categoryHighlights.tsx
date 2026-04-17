@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useEffect, useState, useMemo } from "react"
 import { client } from "@/sanity/lib/client"
 import { urlFor } from "@/sanity/lib/image"
-import { motion } from "framer-motion"
+import { motion, useAnimation } from "framer-motion"
 
 interface Category {
   title: string
@@ -13,12 +13,11 @@ interface Category {
   image: any
 }
 
-export default function CategoryHighlight() {
+export default function CategorySlider() {
   const [categories, setCategories] = useState<Category[]>([])
+  const controls = useAnimation()
 
   useEffect(() => {
-    let mounted = true
-
     const fetchCategories = async () => {
       const query = `*[_type == "category"]{
         title,
@@ -26,107 +25,99 @@ export default function CategoryHighlight() {
         image
       }`
       const result = await client.fetch(query)
-
-      if (mounted) {
-        setCategories(result)
-      }
+      setCategories(result)
     }
 
     fetchCategories()
-
-    return () => {
-      mounted = false
-    }
   }, [])
 
   const categoryData = useMemo(() => {
-    return categories.map((category) => ({
+    const mapped = categories.map((category) => ({
       ...category,
       imageUrl: category.image
-        ? urlFor(category.image).width(1400).height(1600).url()
+        ? urlFor(category.image).width(800).height(1000).url()
         : "/placeholder.png",
     }))
+
+    return [...mapped, ...mapped] // infinite loop trick
   }, [categories])
 
-  return (
-    <section
-      className="bg-[#2FA084] text-white py-32"
-      aria-label="Shop jewelry categories"
-    >
+  // 🔥 auto animation
+  useEffect(() => {
+    controls.start({
+      x: ["0%", "-50%"],
+      transition: {
+        repeat: Infinity,
+        duration: 25,
+        ease: "linear",
+      },
+    })
+  }, [controls])
 
-      {/* 🔥 SEO Hidden Content */}
-      <div className="sr-only">
-        <h2>Shop Jewelry Categories in Pakistan</h2>
-        <p>
-          Explore rings, earrings, necklaces, and handmade jewelry collections
-          at Jhumkara by Zyra. Find premium and affordable jewelry online.
+  return (
+    <section className="bg-[#2FA084] text-white py-24 overflow-hidden">
+
+      {/* Title */}
+      <div className="max-w-7xl mx-auto px-6 mb-16 text-center">
+        <p className="text-xs tracking-[0.5em] uppercase mb-4 text-white/70">
+          Explore
         </p>
+        <h2 className="text-3xl md:text-5xl font-light tracking-wide">
+          Shop by Category
+        </h2>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <div className="relative">
 
-        {/* Title */}
-        <motion.header
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          viewport={{ once: true }}
-          className="text-center mb-24"
+        {/* Gradient edges */}
+        <div className="absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-[#2FA084] to-transparent z-10" />
+        <div className="absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-[#2FA084] to-transparent z-10" />
+
+        <motion.div
+         className="flex gap-4 sm:gap-6 w-max cursor-grab active:cursor-grabbing"
+          animate={controls}
+          drag="x"
+          dragConstraints={{ left: -1000, right: 0 }} // loose constraint for UX
+          onMouseEnter={() => controls.stop()} // pause on hover
+          onMouseLeave={() => {
+            controls.start({
+              x: ["0%", "-50%"],
+              transition: {
+                repeat: Infinity,
+                duration: 25,
+                ease: "linear",
+              },
+            })
+          }}
         >
-          <p className="text-xs tracking-[0.5em] uppercase mb-6">
-            Explore
-          </p>
-
-          <h2 className="text-3xl md:text-5xl font-light tracking-wide">
-            Shop by Jewelry Category
-          </h2>
-        </motion.header>
-
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-
           {categoryData.map((category, index) => (
-            <motion.article
-              key={category.slug.current}
-              initial={{ opacity: 0, y: 60 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: index * 0.2 }}
-              viewport={{ once: true }}
+            <Link
+              key={index}
+              href={`/category/${category.slug.current}`}
+              className="group relative w-[140px] h-[200px] sm:w-[180px] sm:h-[260px] md:w-[300px] md:h-[400px] flex-shrink-0 overflow-hidden  "
             >
+              {/* Image */}
+              <Image
+                src={category.imageUrl}
+                alt={category.title}
+                fill
+                className="object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-110"
+              />
 
-              <Link
-                href={`/category/${category.slug.current}`}
-                className="group relative block h-[520px] overflow-hidden"
-                aria-label={`View ${category.title} jewelry category`}
-              >
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition duration-500" />
 
-                {/* Image */}
-                <Image
-                  src={category.imageUrl}
-                  alt={`${category.title} jewelry collection in Pakistan`}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-110"
-                />
+              {/* Title */}
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
+                <h3 className="text-[10px] sm:text-xs tracking-[0.25em] uppercase font-light">
+                  {category.title}
+                </h3>
 
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition duration-700" />
-
-                {/* Title */}
-                <div className="absolute inset-0 flex items-end justify-center pb-16">
-                  <h3 className="text-xl md:text-2xl tracking-[0.3em] uppercase font-light text-center">
-                    {category.title}
-                  </h3>
-                </div>
-
-                {/* Hover line */}
-                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-white transition-all duration-500 group-hover:w-24"></div>
-
-              </Link>
-            </motion.article>
+                <div className="w-0 h-[1px] bg-white mx-auto mt-2 transition-all duration-500 group-hover:w-12" />
+              </div>
+            </Link>
           ))}
-
-        </div>
+        </motion.div>
       </div>
     </section>
   )

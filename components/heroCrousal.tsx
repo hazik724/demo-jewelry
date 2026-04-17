@@ -8,7 +8,7 @@ import { motion } from "framer-motion"
 
 const slides = [
   {
-    desktop: "/hero/dd1.jpg",
+    desktop: "/hero/main.jpg",
     mobile: "/hero/mobile-1.jpeg",
     label: "ZYRA Luxury Jewelry",
     headline: "ZYRA Timeless Gold Prestige",

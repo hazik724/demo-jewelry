@@ -14,9 +14,9 @@ export default async function HomePage(
   <CinematicTextSlider/>
   <TrustSection/>
   <FeaturedProducts/>
-  <BgImage/>
-  <PremiumTextSlider/>
   <CategoryHighlight/>
+  <PremiumTextSlider/>
+  <BgImage/>
   <FeaturedProducts/>
 
     </div>
