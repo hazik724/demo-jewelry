@@ -32,16 +32,26 @@ export default function CartPage() {
 
 const shippingFee = 300
 const finalTotal = totalPrice + shippingFee
+return (
+  <div className="bg-[#f7f7f5] min-h-screen">
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 py-20">
-      <h1 className="text-5xl font-light mb-16 tracking-tight text-center">
-        Your Shopping Bag
-      </h1>
+    <div className="max-w-7xl mx-auto px-4 md:px-8 py-24">
 
-      <div className="grid md:grid-cols-3 gap-12">
-        {/* CART ITEMS */}
+      {/* HEADER */}
+      <div className="text-center mb-20">
+        <h1 className="text-4xl md:text-6xl font-light tracking-tight">
+          Your Shopping Bag
+        </h1>
+        <p className="text-gray-500 mt-4 tracking-wide text-sm">
+          Carefully curated pieces waiting for you
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-14">
+
+        {/* LEFT: ITEMS */}
         <div className="md:col-span-2 space-y-8">
+
           <AnimatePresence>
             {items.map((item) => (
               <motion.div
@@ -50,105 +60,129 @@ const finalTotal = totalPrice + shippingFee
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="flex flex-col md:flex-row gap-6 border-b pb-6 border-gray-200"
+                className="flex gap-6 bg-white  p-6 shadow-sm hover:shadow-md transition"
               >
-                <div className="relative w-full md:w-32 h-48 bg-gray-100 rounded-xl overflow-hidden">
+
+                {/* IMAGE */}
+                <div className="relative w-28 h-36 md:w-32 md:h-40 overflow-hidden  bg-gray-100">
                   <Image
                     src={item.image}
                     alt={item.title}
                     fill
-                    className="object-cover transition-transform duration-500 hover:scale-105"
+                    className="object-cover hover:scale-105 transition duration-700"
                   />
                 </div>
 
+                {/* DETAILS */}
                 <div className="flex-1 flex flex-col justify-between">
+
                   <div>
-                    <h2 className="text-2xl font-medium tracking-wide mb-2">
+                    <h2 className="text-xl md:text-2xl font-light tracking-wide">
                       {item.title}
                     </h2>
 
-                    <p className="text-[#2FA084] font-semibold text-lg mb-4">
+                    <p className="text-[#2FA084] font-medium mt-2">
                       PKR {item.price.toFixed(2)}
                     </p>
+                  </div>
 
-                    <div className="flex items-center gap-3">
+                  {/* ACTIONS */}
+                  <div className="flex items-center justify-between mt-6">
+
+                    <div className="flex items-center gap-4">
+
                       <button
                         onClick={() => decreaseQty(item._id)}
-                        className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-200 transition"
+                        className="w-9 h-9 rounded-full border border-gray-200 hover:bg-gray-100 transition"
                       >
                         −
                       </button>
 
-                      <span className="text-lg">{item.quantity}</span>
+                      <span className="text-sm tracking-widest">
+                        {item.quantity}
+                      </span>
 
                       <button
                         onClick={() => increaseQty(item._id)}
-                        className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-200 transition"
+                        className="w-9 h-9 rounded-full border border-gray-200 hover:bg-gray-100 transition"
                       >
                         +
                       </button>
 
-                      <button
-                        onClick={() => removeItem(item._id)}
-                        className="ml-auto text-sm text-gray-500 hover:text-red-600 transition"
-                      >
-                        Remove
-                      </button>
                     </div>
+
+                    <button
+                      onClick={() => removeItem(item._id)}
+                      className="text-xs tracking-widest uppercase text-gray-400 hover:text-red-500 transition"
+                    >
+                      Remove
+                    </button>
+
                   </div>
 
-                  <div className="mt-4 text-lg font-semibold">
-                    Total: PKR {(item.price * item.quantity).toFixed(2)}
-                  </div>
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
+
         </div>
 
-        {/* ORDER SUMMARY */}
-        <div className="border border-gray-200 p-8 rounded-xl shadow-lg h-fit">
-          <h2 className="text-2xl font-semibold mb-8 tracking-wide">
-            Order Summary
-          </h2>
+        {/* RIGHT: SUMMARY */}
+        <div className="sticky top-24">
 
-          <div className="flex justify-between mb-4 text-lg">
-            <span>Subtotal</span>
-            <span>PKR {totalPrice.toFixed(2)}</span>
+          <div className="bg-white  p-8 shadow-sm">
+
+            <h2 className="text-xl font-light tracking-wide mb-8">
+              Order Summary
+            </h2>
+
+            <div className="space-y-4 text-sm text-gray-600">
+
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span>PKR {totalPrice.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Shipping</span>
+                <span className="text-[#2FA084] font-medium">
+                  PKR {shippingFee}
+                </span>
+              </div>
+
+              <div className="border-t pt-4 mt-4 flex justify-between text-base font-medium text-black">
+                <span>Total</span>
+                <span>PKR {finalTotal.toFixed(2)}</span>
+              </div>
+
+            </div>
+
+            <Link
+              href="/checkout"
+              className="block mt-10 text-center bg-[#2FA084] text-white py-4  tracking-widest uppercase hover:opacity-90 transition"
+            >
+              Proceed to Checkout
+            </Link>
+
+            <p className="text-xs text-gray-400 mt-4 text-center">
+              Secure Checkout • COD Available
+            </p>
+            <p className="text-xs text-gray-400 mt-4 text-center">
+              For Coustom jewelry Delivery take 8-10 days
+            </p>
           </div>
 
-          <div className="flex justify-between mb-4 text-lg">
-            <span>Shipping</span>
-           <span className="text-[#2FA084] font-semibold">PKR {shippingFee}</span>
-          </div>
-
-          <div className="flex justify-between mb-8 text-xl font-bold border-t pt-4 border-gray-300">
-            <span>Total</span>
-            <span>PKR {finalTotal.toFixed(2)}</span>
-          </div>
-
-          <Link
-            href="/checkout"
-            className="block text-center bg-[#2FA084] text-white py-4 rounded-lg tracking-widest uppercase hover:bg-white hover:text-black transition duration-300"
-          >
-            Proceed to Checkout
-          </Link>
-
-          <p className="text-sm text-gray-400 mt-4 text-center">
-            Secure Checkout • COD 
-          </p>
         </div>
-        
+
       </div>
-      <div>
-        <PremiumTrustSection/>
+
+      {/* EXTRA SECTIONS */}
+      <div className="mt-24 space-y-20">
+        <PremiumTrustSection />
+        <FeaturedProducts />
       </div>
-      <div>
-        <FeaturedProducts/>
-      
-      </div>
+
     </div>
-   
-    
-  )
+  </div>
+)
 }

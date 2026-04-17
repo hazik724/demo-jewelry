@@ -76,21 +76,11 @@ export default function Footer() {
           <div className="flex flex-col gap-2 text-sm text-white/90">
             <Link href="/">Home</Link>
             <Link href="/product">Shop</Link>
-            <Link href="#">Contact</Link>
+            <Link href="/contact">Contact</Link>
           </div>
         </div>
 
-        {/* Newsletter */}
-        <div>
-          <h3 className="font-semibold mb-4">Newsletter</h3>
-          <p className="text-sm text-white/90 mb-4">
-            Subscribe for latest updates.
-          </p>
-          <input
-            placeholder="Enter your email"
-            className="px-3 py-2 w-full rounded text-black"
-          />
-        </div>
+       
 
       </div>
 
