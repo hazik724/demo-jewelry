@@ -6,6 +6,7 @@ import PremiumTextSlider from "@/components/PremiumTextSlider"
 import TrustSection from "@/components/TrustSection"
 import BgImage from "@/components/BgImage"
 import CategoryLinks from "@/components/CategoryLink"
+import DeliveryText from "@/components/deliverytext"
 
 export default async function HomePage(
   ){
@@ -18,6 +19,7 @@ export default async function HomePage(
   <CategoryHighlight/>
   <PremiumTextSlider/>
   <BgImage/>
+  <DeliveryText/>
   <FeaturedProducts/>
   <CategoryLinks  />
 

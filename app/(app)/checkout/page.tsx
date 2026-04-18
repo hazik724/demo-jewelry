@@ -5,10 +5,11 @@ import { useCartStore } from "@/app/store/CartStore"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
+import DeliveryText from "@/components/deliverytext"
 
 export default function CheckoutPage() {
 
-
+const [paymentMethod, setPaymentMethod] = useState("cod")
   const [errors, setErrors] = useState<any>({})
   const { items, clearCart } = useCartStore()
 
@@ -29,7 +30,7 @@ export default function CheckoutPage() {
   const [success, setSuccess] = useState(false)
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shippingFee = 300
+  const shippingFee = paymentMethod === "online" ? 250 : 400
 const finalTotal = total + shippingFee
 
   const handleChange = (e: any) =>
@@ -231,17 +232,175 @@ setErrors({})
 
           {/* Payment */}
 
-          <div className="mt-4">
-            <h3 className="text-lg font-light mb-2">
-              Payment Method
-            </h3>
+        <div className="mt-6 space-y-4">
 
-            <div className="flex items-center gap-2">
-              <input type="radio" checked readOnly className="accent-[#2FA084]" />
-              <span>Cash on Delivery</span>
-            </div>
-          </div>
+  {/* Title */}
+  <h3 className="text-lg font-light tracking-wide">
+    Payment Method
+  </h3>
 
+  {/* Card Container */}
+  <div className="space-y-3">
+
+    {/* COD CARD */}
+    <label className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer border transition-all duration-300
+      ${paymentMethod === "cod"
+        ? "border-[#2FA084] bg-[#2FA084]/10 shadow-[0_0_25px_rgba(47,160,132,0.15)]"
+        : "border-white/10 bg-black/30 hover:border-white/20"}
+    `}>
+
+      <div className="flex items-center gap-3">
+
+        <input
+          type="radio"
+          name="payment"
+          checked={paymentMethod === "cod"}
+          onChange={() => setPaymentMethod("cod")}
+          className="accent-[#2FA084]"
+        />
+
+        <div>
+          <p className="text-white font-medium">Cash on Delivery</p>
+          <p className="text-xs text-gray-400">Pay when you receive your order</p>
+        </div>
+
+      </div>
+
+      <span className="text-xs text-gray-400">
+         PKR 400
+      </span>
+
+    </label>
+
+    {/* ONLINE CARD */}
+    <label className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer border transition-all duration-300
+      ${paymentMethod === "online"
+        ? "border-[#2FA084] bg-[#2FA084]/10 shadow-[0_0_25px_rgba(47,160,132,0.15)]"
+        : "border-white/10 bg-black/30 hover:border-white/20"}
+    `}>
+
+      <div className="flex items-center gap-3">
+
+        <input
+          type="radio"
+          name="payment"
+          checked={paymentMethod === "online"}
+          onChange={() => setPaymentMethod("online")}
+          className="accent-[#2FA084]"
+        />
+
+        <div>
+          <p className="text-white font-medium">Online Payment</p>
+          <p className="text-xs text-gray-400">Bank / Easypaisa / JazzCash</p>
+        </div>
+
+      </div>
+
+      <span className="text-xs text-[#2FA084] font-semibold">
+         PKR 250
+      </span>
+
+    </label>
+
+  </div>
+
+  {/* Info Line */}
+  <div className="mt-4 p-3 rounded-xl border border-[#2FA084]/30 bg-[#2FA084]/10 text-sm text-gray-300">
+    Get <span className="text-[#2FA084] font-medium">discounted shipping</span> when you choose online payment.
+  </div>
+
+</div>
+{paymentMethod === "online" && (
+  <div className="mt-5 p-[1px] rounded-2xl bg-gradient-to-r from-[#2FA084] via-emerald-400 to-[#2FA084] shadow-[0_0_40px_rgba(47,160,132,0.25)]">
+
+    <div className="bg-black/80 backdrop-blur-xl rounded-2xl p-6 space-y-6">
+
+      {/* Header */}
+      <div className="text-center">
+        <h4 className="text-lg font-light text-white tracking-wide">
+          Secure Payment Details
+        </h4>
+        <p className="text-xs text-gray-400 mt-1">
+          Complete payment and share screenshot for confirmation
+        </p>
+      </div>
+
+      <div className="h-px bg-white/10" />
+
+      {/* HBL */}
+      <div className="space-y-2">
+        <p className="text-[#2FA084] text-sm font-medium tracking-wide">
+          HBL Bank
+        </p>
+
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-400">Account Title</span>
+          <span className="text-white">Hafiza Maliha</span>
+        </div>
+
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-400">IBAN</span>
+          <span className="text-white text-right break-all">
+            PK85HABB0004317000075303
+          </span>
+        </div>
+      </div>
+
+      <div className="h-px bg-white/10" />
+
+      {/* Meezan */}
+      <div className="space-y-2">
+        <p className="text-[#2FA084] text-sm font-medium tracking-wide">
+          Meezan Bank
+        </p>
+
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-400">Account Title</span>
+          <span className="text-white">Hafiza Maliha Jamshaid</span>
+        </div>
+
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-400">IBAN</span>
+          <span className="text-white text-right break-all">
+            PK69MEZN0035010105676255
+          </span>
+        </div>
+      </div>
+
+      <div className="h-px bg-white/10" />
+
+      {/* JazzCash */}
+      <div className="space-y-2">
+        <p className="text-[#2FA084] text-sm font-medium tracking-wide">
+          JazzCash
+        </p>
+
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-400">Account Title</span>
+          <span className="text-white">Hafiza Maliha Jamshaid</span>
+        </div>
+
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-400">Number</span>
+          <span className="text-white">
+            0303 7830023
+          </span>
+        </div>
+      </div>
+
+      {/* Bottom Note */}
+      <div className="text-s text-gray-400 bg-white/5 border border-white/10 rounded-xl p-3 text-center">
+        After payment, send screenshot on WhatsApp 03083366699 to confirm your order.
+      </div>
+
+      {/* Highlight */}
+      <div className="text-center text-sm text-[#2FA084] font-medium tracking-wide">
+         Shipping Discount Applied !
+      </div>
+
+    </div>
+  </div>
+)}
         </motion.div>
 
         {/* ORDER SUMMARY */}
@@ -263,7 +422,7 @@ setErrors({})
 
               <div key={item._id} className="flex gap-4 items-center">
 
-                <div className="relative w-20 h-28 bg-gray-800 rounded-lg overflow-hidden border border-gold-500">
+                <div className="relative w-20 h-28 bg-gray-800  overflow-hidden border border-gold-500">
                   <Image src={item.image} alt={item.title} fill className="object-cover" />
                 </div>
 
@@ -303,7 +462,7 @@ setErrors({})
     <span>Total</span>
     <span>PKR {finalTotal.toFixed(2)}</span>
   </div>
-
+<DeliveryText/>
 </div>
 
           <motion.button
@@ -311,12 +470,13 @@ setErrors({})
             disabled={loading || success}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-4 bg-[#2FA084] text-white font-light text-lg rounded-2xl uppercase tracking-widest hover:brightness-110 transition"
+            className="w-full py-4 bg-[#2FA084] text-white font-light text-lg uppercase tracking-widest hover:brightness-110 transition"
           >
             {loading ? "Processing..." : success ? "Order Placed!" : "Place Order"}
           </motion.button>
 
         </motion.div>
+        
 
       </div>
 

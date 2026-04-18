@@ -7,6 +7,7 @@ import FeaturedProducts from "@/components/featuredProducts"
 import WhatsAppProductButton from "@/components/ProductWhatsapp"
 import PremiumTrustSection from "@/components/TrustSection"
 import CategoryLink from "@/components/CategoryLink"
+import DeliveryText from "@/components/deliverytext"
 
 async function getProduct(slug: string) {
   const query = `*[_type == "product" && slug.current == $slug][0]{
@@ -163,7 +164,7 @@ export default async function Page({
             {/* Title */}
             <div>
               <h1 className="text-5xl font-light tracking-wide leading-tight">
-                {product.title} – Premium Jewelry
+                {product.title} 
               </h1>
             </div>
 
@@ -205,9 +206,7 @@ export default async function Page({
 
             {/* Trust Block */}
             <div className="border-t border-neutral-200 pt-8 text-sm text-neutral-500 space-y-2">
-              <p>Made with premium materials</p>
-              <p>Complimentary worldwide shipping</p>
-              <p>30-day returns</p>
+              <DeliveryText/>
             </div>
 
           </div>
