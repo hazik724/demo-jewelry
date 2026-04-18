@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from "react"
 
 const texts = [
-  "FREE WORLDWIDE SHIPPING",
-  "PREMIUM QUALITY MATERIALS",
-  "NEW COLLECTION AVAILABLE",
-  "30-DAY RETURNS",
-  "LIMITED EDITION PRODUCTS",
+   "Adorn Yourself with Timeless Jhumkara Elegance",
+  "Where Every Piece Tells a Story",
+  "Crafted with Tradition, Styled for Today",
+  "Grace in Every Detail, Beauty in Every Shine",
+  "Made to Celebrate Your Every Moment",
 ]
 
 export default function CinematicTextSlider() {
