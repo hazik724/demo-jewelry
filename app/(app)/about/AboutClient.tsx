@@ -32,7 +32,7 @@ export default function AboutPage() {
 
         {/* Background Image */}
         <Image
-          src="/hero/abot.jfif"
+          src="/hero/about.jpeg"
           alt="Luxury Jewelry"
           fill
           className="object-cover opacity-40 scale-110"
@@ -151,7 +151,7 @@ export default function AboutPage() {
             className="relative h-[420px] rounded-2xl overflow-hidden"
           >
             <Image
-              src="/hero/abot.jfif"
+              src="/hero/about.jpeg"
               alt="Luxury Craft"
               fill
               className="object-cover"
