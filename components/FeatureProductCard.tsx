@@ -74,11 +74,7 @@ export default function FeaturedProductCard({ product }: Props) {
       itemType="https://schema.org/Product"
     >
 
-      {/* 🔥 JSON-LD (Google reads this) */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-      />
+      
 
       {/* IMAGE */}
       <Link
