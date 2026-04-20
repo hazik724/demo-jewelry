@@ -168,7 +168,7 @@ return (
               Secure Checkout • COD Available
             </p>
             <p className="text-xs text-gray-400 mt-4 text-center">
-              For Coustom jewelry Delivery take 8-10 days
+              For Custom jewelry Delivery take 8-10 days
             </p>
           </div>
 
