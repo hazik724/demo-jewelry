@@ -3,7 +3,6 @@
 import Image from "next/image"
 import Link from "next/link"
 import CartButton from "@/app/(app)/product/[slug]/CartButton"
-import { useCartStore } from "@/app/store/CartStore"
 import { urlFor } from "@/sanity/lib/image"
 import { useEffect, useState, useMemo } from "react"
 
@@ -47,34 +46,8 @@ export default function FeaturedProductCard({ product }: Props) {
     return () => clearInterval(interval)
   }, [imageUrls.length])
 
-  // 🔥 SEO: Product Schema (VERY IMPORTANT)
-  const productSchema = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.title,
-    image: imageUrls,
-    description: `${product.title} - Premium jewelry by Jhumkara`,
-    brand: {
-      "@type": "Brand",
-      name: "Jhumkara by Zyra",
-    },
-    offers: {
-      "@type": "Offer",
-      priceCurrency: "PKR",
-      price: product.discountPrice ?? product.price,
-      availability: "https://schema.org/InStock",
-      url: `https://jhumkara.com/product/${product.slug.current}`,
-    },
-  }
-
   return (
-    <div
-      className="group relative bg-white dark:bg-gray-900 overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300"
-      itemScope
-      itemType="https://schema.org/Product"
-    >
-
-      
+    <div className="group relative bg-white dark:bg-gray-900 overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300">
 
       {/* IMAGE */}
       <Link
@@ -93,7 +66,7 @@ export default function FeaturedProductCard({ product }: Props) {
               <div key={i} className="relative w-full h-full flex-shrink-0">
                 <Image
                   src={imageUrl}
-                  alt={`${product.title} - buy jewelry online Pakistan`}
+                  alt={`${product.title} - premium jewelry Pakistan`}
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                   loading={i === 0 ? "eager" : "lazy"}
@@ -114,25 +87,19 @@ export default function FeaturedProductCard({ product }: Props) {
           href={`/product/${product.slug.current}`}
           className="block"
         >
-          <h3
-            className="text-sm md:text-base font-medium line-clamp-2 hover:underline min-h-[40px]"
-            itemProp="name"
-          >
+          <h3 className="text-sm md:text-base font-medium line-clamp-2 hover:underline min-h-[40px]">
             {product.title}
           </h3>
         </Link>
 
         <div className="flex items-center gap-2">
-          <span
-            className="text-[#740A03] font-semibold text-sm md:text-base"
-            itemProp="price"
-          >
+          <span className="text-[#740A03] font-semibold text-sm md:text-base">
             PKR {product.discountPrice ?? product.price}
           </span>
 
           {product.discountPrice && (
             <span className="line-through text-gray-400 text-xs">
-              {product.price}
+              PKR {product.price}
             </span>
           )}
         </div>
