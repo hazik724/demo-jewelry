@@ -6,6 +6,7 @@ import { urlFor } from "@/sanity/lib/image"
 
 export default function ProductGallery({ images }: { images: any[] }) {
   const [selected, setSelected] = useState(0)
+  const [fullscreen, setFullscreen] = useState(false)
 
   const safeImages = images?.length ? images : ["/placeholder.png"]
 
@@ -30,13 +31,16 @@ export default function ProductGallery({ images }: { images: any[] }) {
     <div className="w-full">
 
       {/* MAIN IMAGE */}
-      <div className="relative w-full h-[70vh] md:h-auto md:aspect-[4/5] bg-neutral-100 overflow-hidden">
+      <div
+        className="relative w-full h-[70vh] md:h-auto md:aspect-[4/5] bg-neutral-100 overflow-hidden cursor-pointer"
+        onClick={() => setFullscreen(true)}
+      >
         <Image
           src={mainImages[selected]}
           alt="product"
           fill
-          sizes="(max-width: 768px) 100vw, 50vw" // ✅ FIXED
-          priority={selected === 0} // ✅ only first image priority
+          sizes="(max-width: 768px) 100vw, 50vw"
+          priority={selected === 0}
           className="object-cover transition duration-500"
         />
       </div>
@@ -55,12 +59,33 @@ export default function ProductGallery({ images }: { images: any[] }) {
               src={img}
               alt="thumb"
               fill
-              sizes="65px" // ✅ FIXED (small fixed size)
+              sizes="65px"
               className="object-cover"
             />
           </button>
         ))}
       </div>
+
+      {/* 💎 FULLSCREEN VIEW (MOBILE ONLY FEEL) */}
+      {fullscreen && (
+        <div
+          className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+          onClick={() => setFullscreen(false)}
+        >
+          <Image
+            src={mainImages[selected]}
+            alt="fullscreen product"
+            fill
+            className="object-contain"
+            sizes="100vw"
+          />
+
+          {/* close hint */}
+          <div className="absolute top-5 right-5 text-white text-xs tracking-[0.3em] uppercase opacity-70">
+            Tap to close
+          </div>
+        </div>
+      )}
 
     </div>
   )

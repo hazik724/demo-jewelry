@@ -7,13 +7,16 @@ import TrustSection from "@/components/TrustSection"
 import BgImage from "@/components/BgImage"
 import CategoryLinks from "@/components/CategoryLink"
 import DeliveryText from "@/components/deliverytext"
+import CategoryTeaser from "@/components/CategoryTeaser"
 
 export default async function HomePage(
   ){
+    
   return (
     <div>
   <HeroCrousal/>
   <CinematicTextSlider/>
+  <CategoryTeaser/>
   <TrustSection/>
   <FeaturedProducts/>
   <CategoryHighlight/>
