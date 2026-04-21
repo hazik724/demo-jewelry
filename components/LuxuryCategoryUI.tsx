@@ -24,16 +24,22 @@ export default function LuxuryCategoryUI({
   return (
     <div className="bg-[#f7f7f5] min-h-screen">
 
-      {/* HEADER */}
       <div className="text-center py-24 px-6">
-        <p className="text-[10px] tracking-[0.5em] uppercase text-gray-400 mb-6">
-          Explore
-        </p>
+  <p className="text-[10px] tracking-[0.5em] uppercase text-gray-400 mb-6">
+    Explore
+  </p>
 
-        <h1 className="text-4xl md:text-6xl font-light tracking-tight">
-          Collections
-        </h1>
-      </div>
+  <h1 className="text-4xl md:text-6xl font-light tracking-tight">
+    Collections
+  </h1>
+
+  {/* SEO TEXT (IMPORTANT) */}
+  <p className="mt-6 max-w-2xl mx-auto text-gray-500 text-sm leading-relaxed">
+    Discover premium handcrafted jewelry collections including earrings,
+    rings, necklaces, and traditional Pakistani designs. Explore luxury
+    categories designed for modern elegance by Jhumkara.
+  </p>
+</div>
 
       {/* DESKTOP */}
       <div className="hidden md:grid grid-cols-2 max-w-7xl mx-auto px-6 gap-16 items-center pb-24">

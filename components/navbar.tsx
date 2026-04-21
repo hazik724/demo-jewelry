@@ -13,6 +13,7 @@ export default function Navbar() {
     { name: "Home", href: "/" },
     { name: "Shop", href: "/product" },
     { name: "About", href: "/about" },
+    { name: "categories", href: "/category" },
   ]
 
   return (
@@ -85,7 +86,7 @@ export default function Navbar() {
                 visible: { transition: { staggerChildren: 0.15 } },
                 hidden: { transition: { staggerChildren: 0.1, staggerDirection: -1 } },
               }}
-              className="flex flex-col gap-10 text-2xl tracking-[0.3em] uppercase"
+              className="flex flex-col gap-10 text-2xl tracking-[0.3em] text-center uppercase"
             >
               {menuLinks.map((link) => (
                 <motion.li
