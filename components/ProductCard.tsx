@@ -53,11 +53,7 @@ export default function ProductCard({ product }: Props) {
   }, [imageUrls.length])
 
   return (
-    <article
-      className="group block"
-      itemScope
-      itemType="https://schema.org/Product"
-    >
+    <article className="group block">
 
       <Link
         href={`/product/${product.slug.current}`}
@@ -95,19 +91,13 @@ export default function ProductCard({ product }: Props) {
         {/* TEXT */}
         <div className="pt-4 space-y-1">
 
-          <h3
-            className="text-sm md:text-base font-normal tracking-wide text-neutral-900"
-            itemProp="name"
-          >
+          <h3 className="text-sm md:text-base font-normal tracking-wide text-neutral-900">
             {product.title}
           </h3>
 
           <div className="flex items-center gap-2 text-sm">
 
-            <span
-              className="text-black font-medium"
-              itemProp="price"
-            >
+            <span className="text-black font-medium">
               PKR {product.discountPrice ?? product.price}
             </span>
 
