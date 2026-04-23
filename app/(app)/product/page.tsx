@@ -8,14 +8,14 @@ export const metadata: Metadata = {
     "Explore premium handcrafted jewelry in Pakistan including bridal jewelry, earrings, rings, necklaces, and luxury accessories. Shop online with cash on delivery and affordable prices.",
 
   alternates: {
-    canonical: "https://jhumkara.com/products",
+    canonical: "https://jhumkara.com/product",
   },
 
   openGraph: {
     title: "Jewelry Collection | Jhumkara by Zyra",
     description:
       "Premium handcrafted jewelry collection in Pakistan. Explore earrings, rings, necklaces, and luxury fashion pieces.",
-    url: "https://jhumkara.com/products",
+    url: "https://jhumkara.com/product",
     siteName: "Jhumkara by Zyra",
     type: "website",
   },
@@ -35,7 +35,7 @@ const schema = {
   name: "Jewelry Collection Pakistan",
   description:
     "Premium handcrafted jewelry collection in Pakistan by Jhumkara by Zyra.",
-  url: "https://jhumkara.com/products",
+  url: "https://jhumkara.com/product",
   mainEntity: {
     "@type": "ItemList",
     name: "Jewelry Products",
