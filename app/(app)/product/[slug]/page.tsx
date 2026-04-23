@@ -194,7 +194,20 @@ export default async function Page({
             <div className="border-t border-neutral-200 pt-8 text-sm text-neutral-500 space-y-2">
               <DeliveryText/>
             </div>
-
+          <a
+            href="/product"
+            className="inline-block border border-black text-center px-10 py-3 text-sm uppercase tracking-widest hover:bg-[#2FA084] hover:text-white transition"
+            aria-label="View all jewelry products"
+          >
+             All Products
+          </a>
+            <a
+            href="/category"
+            className="inline-block border border-black text-center px-10 py-3 text-sm uppercase tracking-widest hover:bg-[#2FA084] hover:text-white transition"
+            aria-label="View all jewelry products"
+          >
+            categories
+          </a>
           </div>
         </div>
       </div>
