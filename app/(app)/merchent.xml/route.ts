@@ -1,4 +1,5 @@
 import { client } from "@/sanity/lib/client"
+import { urlFor } from "@/sanity/lib/image"
 
 export async function GET() {
   const baseUrl = "https://jhumkara.com"
@@ -17,7 +18,7 @@ export async function GET() {
     .map((p: any) => {
       const image =
         p.images?.[0]
-          ? p.images[0].asset?.url || ""
+          ? urlFor(p.images[0]).url() || ""
           : ""
 
       return `
