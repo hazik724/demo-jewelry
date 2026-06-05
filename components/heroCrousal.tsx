@@ -71,7 +71,10 @@ export default function HeroCarousel() {
       clearInterval(interval)
     }
   }, [emblaApi, onSelect])
-
+  const fadeUp = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+  }
   return (
     <section
       className="relative h-[85vh] md:h-screen w-full overflow-hidden bg-black"
@@ -102,25 +105,31 @@ export default function HeroCarousel() {
 
               {/* Desktop Image */}
               <Image
-                src={slide.desktop}
-                alt={slide.alt}
-                fill
-                sizes="100vw"
-                priority={index === 0}
-                quality={90}
-                className="object-cover hidden md:block"
-              />
+  src={slide.desktop}
+  alt={slide.alt}
+  fill
+  sizes="(max-width: 768px) 0px, 100vw"
+  priority={index === 0}
+  fetchPriority={index === 0 ? "high" : "auto"}
+  loading={index === 0 ? "eager" : "lazy"}
+  quality={75}
+  draggable={false}
+  className="object-cover hidden md:block select-none"
+ />
 
               {/* Mobile Image */}
               <Image
-                src={slide.mobile}
-                alt={slide.alt}
-                fill
-                sizes="100vw"
-                priority={index === 0}
-                quality={90}
-                className="object-cover block md:hidden"
-              />
+  src={slide.mobile}
+  alt={slide.alt}
+  fill
+  sizes="(max-width: 768px) 100vw, 0px"
+  priority={index === 0}
+  fetchPriority={index === 0 ? "high" : "auto"}
+  loading={index === 0 ? "eager" : "lazy"}
+  quality={75}
+  draggable={false}
+  className="object-cover block md:hidden select-none"
+/>
 
               {/* Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
@@ -128,12 +137,12 @@ export default function HeroCarousel() {
               {/* Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6">
 
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8 }}
-                  className="text-xs tracking-[0.5em] uppercase mb-6"
-                >
+              <motion.p
+  variants={fadeUp}
+  initial="initial"
+  animate="animate"
+  transition={{ duration: 0.6 }}
+>
                   {slide.label}
                 </motion.p>
 

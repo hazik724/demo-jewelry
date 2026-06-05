@@ -24,7 +24,7 @@ export default function HeroBanner() {
 
           <p className="mt-6 max-w-lg text-base leading-relaxed text-gray-600">
             Discover handcrafted premium jewelry designed
-            with sophistication, luxury, and elegance.
+            with sophistication, luxury, and elegancy.
           </p>
 
           <div className="mt-8 flex gap-4">

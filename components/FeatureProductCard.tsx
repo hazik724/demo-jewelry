@@ -1,10 +1,8 @@
-"use client"
-
 import Image from "next/image"
 import Link from "next/link"
 import CartButton from "@/app/(app)/product/[slug]/CartButton"
 import { urlFor } from "@/sanity/lib/image"
-import { useEffect, useState, useMemo } from "react"
+import { memo, useMemo } from "react"
 
 interface Product {
   _id: string
@@ -19,79 +17,113 @@ interface Props {
   product: Product
 }
 
-export default function FeaturedProductCard({ product }: Props) {
-  const [currentIndex, setCurrentIndex] = useState(0)
+function FeaturedProductCard({ product }: Props) {
+  /**
+   * Normalize images ONCE per product
+   * No runtime recalculation per render
+   */
+  const { primaryImage, secondaryImage } = useMemo(() => {
+    const imgs = product.images?.length
+      ? product.images
+      : ["/placeholder.png"]
 
-  const images = product.images?.length
-    ? product.images
-    : ["/placeholder.png"]
-
-  const imageUrls = useMemo(() => {
-    return images.map((img) =>
+    const toUrl = (img: any) =>
       typeof img === "string"
         ? img
-        : urlFor(img).width(500).height(600).url()
-    )
-  }, [images])
+        : urlFor(img)
+            .width(340)
+            .height(420)
+            .quality(70)
+            .auto("format")
+            .url()
 
-  useEffect(() => {
-    if (imageUrls.length <= 1) return
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) =>
-        prev === imageUrls.length - 1 ? 0 : prev + 1
-      )
-    }, 3000)
-
-    return () => clearInterval(interval)
-  }, [imageUrls.length])
+    return {
+      primaryImage: toUrl(imgs[0]),
+      secondaryImage: imgs[1] ? toUrl(imgs[1]) : null,
+    }
+  }, [product.images])
 
   return (
-    <div className="group relative bg-white dark:bg-gray-900 overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300">
+    <div
+      className="
+        group relative
+        bg-white dark:bg-gray-900
+        overflow-hidden
+        border border-gray-100
+        hover:shadow-2xl
+        transition-shadow duration-300
+        will-change-transform
+        transform-gpu
+      "
+    >
 
-      {/* IMAGE */}
+      {/* IMAGE WRAPPER */}
       <Link
         href={`/product/${product.slug.current}`}
-        aria-label={`View details of ${product.title}`}
+        aria-label={`View ${product.title}`}
+        className="block"
       >
-        <div className="relative w-full aspect-[4/5] overflow-hidden">
+        <div className="relative w-full aspect-[4/5] overflow-hidden bg-gray-50">
 
-          <div
-            className="flex h-full transition-transform duration-700 ease-in-out"
-            style={{
-              transform: `translateX(-${currentIndex * 100}%)`,
-            }}
-          >
-            {imageUrls.map((imageUrl, i) => (
-              <div key={i} className="relative w-full h-full flex-shrink-0">
-                <Image
-                  src={imageUrl}
-                  alt={`${product.title} - premium jewelry Pakistan`}
-                  fill
-                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                  loading={i === 0 ? "eager" : "lazy"}
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-              </div>
-            ))}
-          </div>
+          {/* PRIMARY IMAGE (LCP SAFE) */}
+          <Image
+            src={primaryImage}
+            alt={product.title}
+            fill
+            sizes="(max-width: 768px) 50vw, 25vw"
+            loading="lazy"
+            quality={75}
+            className="
+              object-cover
+              transition-transform duration-700
+              group-hover:scale-105
+              will-change-transform
+            "
+          />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-500" />
+          {/* SECONDARY IMAGE (HOVER ONLY, NO JS) */}
+          {secondaryImage && (
+            <Image
+              src={secondaryImage}
+              alt={product.title}
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              loading="lazy"
+              quality={75}
+              className="
+                object-cover
+                opacity-0
+                group-hover:opacity-100
+                transition-opacity duration-500
+                will-change-opacity
+              "
+            />
+          )}
+
+          {/* PREMIUM LIGHT OVERLAY */}
+          <div className="
+            absolute inset-0
+            bg-gradient-to-t from-black/10 via-transparent to-transparent
+            opacity-0 group-hover:opacity-100
+            transition
+          " />
         </div>
       </Link>
 
-      {/* INFO */}
+      {/* CONTENT */}
       <div className="p-4 space-y-2">
 
-        <Link
-          href={`/product/${product.slug.current}`}
-          className="block"
-        >
-          <h3 className="text-sm md:text-base font-medium line-clamp-2 hover:underline min-h-[40px]">
+        <Link href={`/product/${product.slug.current}`}>
+          <h3 className="
+            text-sm md:text-base font-medium
+            line-clamp-2 min-h-[40px]
+            hover:underline
+          ">
             {product.title}
           </h3>
         </Link>
 
+        {/* PRICE */}
         <div className="flex items-center gap-2">
           <span className="text-[#740A03] font-semibold text-sm md:text-base">
             PKR {product.discountPrice ?? product.price}
@@ -104,20 +136,20 @@ export default function FeaturedProductCard({ product }: Props) {
           )}
         </div>
 
+        {/* CART (optimized image only) */}
         <div className="pt-6">
           <CartButton
             id={product._id}
             title={product.title}
             slug={product.slug.current}
             price={product.price}
-            image={
-              product.images?.[0]
-                ? urlFor(product.images[0]).width(600).url()
-                : "/placeholder.png"
-            }
+            image={primaryImage}
           />
         </div>
+
       </div>
     </div>
   )
 }
+
+export default memo(FeaturedProductCard)

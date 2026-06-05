@@ -2,10 +2,9 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState } from "react"
 import { client } from "@/sanity/lib/client"
 import { urlFor } from "@/sanity/lib/image"
-import { motion } from "framer-motion"
 
 interface Category {
   title: string
@@ -31,16 +30,6 @@ export default function LuxuryCategoryHome() {
     fetchCategories()
   }, [])
 
-  // 🔥 OPTIMIZATION: compute once, not per render
-  const optimizedCategories = useMemo(() => {
-    return categories.map((category) => ({
-      ...category,
-      imageUrl: category.image
-        ? urlFor(category.image).width(1000).height(1200).url()
-        : "/placeholder.png",
-    }))
-  }, [categories])
-
   return (
     <section className="py-28">
 
@@ -59,52 +48,61 @@ export default function LuxuryCategoryHome() {
         </p>
       </div>
 
-      {/* GRID */}
       <div className="max-w-7xl mx-auto px-6">
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10">
 
-          {optimizedCategories.map((category, index) => (
-            <motion.div
-              key={category.slug.current}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "0px 0px -100px 0px" }} // 🔥 faster trigger
-              transition={{ delay: index * 0.05 }} // 🔥 reduced delay = faster feel
-            >
-              <Link
-                href={`/category/${category.slug.current}`}
-                className="group block"
-                prefetch={true} // 🔥 faster navigation
-              >
+          {categories.map((category, index) => {
+            const imageUrl = category.image
+              ? urlFor(category.image)
+                  .width(600)
+                  .height(750)
+                  .quality(70)
+                  .auto("format")
+                  .url()
+              : "/placeholder.png"
 
-                {/* IMAGE */}
-                <div className="relative w-full h-[260px] sm:h-[340px] md:h-[420px] overflow-hidden bg-gray-100">
+            return (
+              <div key={category.slug.current}>
+                <Link
+                  href={`/category/${category.slug.current}`}
+                  className="group block"
+                  prefetch
+                >
 
-                  <Image
-                    src={category.imageUrl}
-                    alt={category.title}
-                    fill
-                    priority={index < 2} // 🔥 load first 2 images instantly
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                    className="object-cover transition duration-[2000ms] group-hover:scale-110"
-                  />
+                  {/* IMAGE */}
+                  <div className="relative w-full h-[260px] sm:h-[340px] md:h-[420px] overflow-hidden bg-gray-100">
 
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition" />
-                </div>
+                    <Image
+                      src={imageUrl}
+                      alt={category.title}
+                      fill
+                      sizes="(max-width: 768px) 50vw, 33vw"
+                      loading={index < 2 ? "eager" : "lazy"}
+                      priority={index === 0}
+                      className="
+                        object-cover
+                        transition-transform duration-700
+                        group-hover:scale-105
+                      "
+                    />
 
-                {/* TEXT */}
-                <div className="mt-5 text-center">
-                  <h3 className="text-xs md:text-sm tracking-[0.3em] uppercase font-light text-gray-800 group-hover:text-[#2FA084] transition">
-                    {category.title}
-                  </h3>
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition" />
+                  </div>
 
-                  <div className="w-0 h-[1px] bg-[#2FA084] mx-auto mt-2 group-hover:w-12 transition-all duration-500" />
-                </div>
+                  {/* TEXT */}
+                  <div className="mt-5 text-center">
+                    <h3 className="text-xs md:text-sm tracking-[0.3em] uppercase font-light text-gray-800 group-hover:text-[#2FA084] transition">
+                      {category.title}
+                    </h3>
 
-              </Link>
-            </motion.div>
-          ))}
+                    <div className="w-0 h-[1px] bg-[#2FA084] mx-auto mt-2 group-hover:w-12 transition-all duration-500" />
+                  </div>
+
+                </Link>
+              </div>
+            )
+          })}
 
         </div>
       </div>
