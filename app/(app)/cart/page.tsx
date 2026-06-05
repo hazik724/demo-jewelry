@@ -4,7 +4,6 @@ import { useCartStore } from "@/app/store/CartStore"
 import Image from "next/image"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import FeaturedProducts from "@/components/featuredProducts"
 import PremiumTrustSection from "@/components/TrustSection"
 
 export default function CartPage() {
@@ -179,7 +178,7 @@ return (
       {/* EXTRA SECTIONS */}
       <div className="mt-24 space-y-20">
         <PremiumTrustSection />
-        <FeaturedProducts />
+        
       </div>
 
     </div>
