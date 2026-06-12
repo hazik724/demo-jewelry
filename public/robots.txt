@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://jhumkara.com
+
+# Sitemaps
+Sitemap: https://jhumkara.com/sitemap.xml
