@@ -40,7 +40,7 @@ export default async function FeaturedProducts() {
         <h2>Buy Latest Jewelry Online in Pakistan - Jhumkara by Zyra</h2>
         <p>
           Explore our newest collection of earrings, necklaces, rings,
-          and premium accessories crafted for elegance and modern style
+          and premium accessories crafted for elegance and modern style.
         </p>
       </div>
 
