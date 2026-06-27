@@ -72,7 +72,7 @@ const itemListSchema = {
   })),
 }
   return (
-    <main className="max-w-7xl mx-auto px-4 md:px-8 py-16">
+    <main className="max-w-8xl mx-auto px-1 md:px-2 py-16">
       <script
   type="application/ld+json"
   dangerouslySetInnerHTML={{
@@ -99,7 +99,7 @@ const itemListSchema = {
       {/* Product Grid */}
       {products.length > 0 ? (
         <section aria-label={`${slug} jewelry products`}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
             {products.map((product: any) => (
               <CategoryProductCard key={product._id} product={product} />
             ))}

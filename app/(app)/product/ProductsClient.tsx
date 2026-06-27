@@ -69,7 +69,7 @@ export default function ProductsClient() {
   }, [products, sortOption])
 
   return (
-    <main className="max-w-7xl mx-auto px-6 md:px-12 py-20">
+    <main className="max-w-8xl mx-auto px-1 md:px-2 py-20">
 
       {/* ---------------- SEO FALLBACK ---------------- */}
       <noscript>
@@ -114,7 +114,7 @@ export default function ProductsClient() {
 
       {/* ---------------- PRODUCT GRID ---------------- */}
       <section aria-label="Jewelry products list">
-        <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-10 gap-y-16">
+        <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-1 gap-y-4">
           {sortedProducts.length > 0 ? (
             sortedProducts.map((product) => (
               <li key={product._id}>

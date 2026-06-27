@@ -17,8 +17,8 @@ export default async function HomePage(
   <HeroCrousal/>
   <CinematicTextSlider/>
   <CategoryTeaser/>
-  <TrustSection/>
   <FeaturedProducts/>
+  <TrustSection/>
   <CategoryHighlight/>
   <PremiumTextSlider/>
   <BgImage/>

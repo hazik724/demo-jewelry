@@ -1,58 +1,53 @@
-"use client"
+import Image from "next/image";
+import Link from "next/link";
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
 
-import Image from "next/image"
-import Link from "next/link"
-import { useEffect, useState } from "react"
-import { client } from "@/sanity/lib/client"
-import { urlFor } from "@/sanity/lib/image"
+export const revalidate = 3600;
 
 interface Category {
-  title: string
-  slug: { current: string }
-  image: any
+  title: string;
+  slug: {
+    current: string;
+  };
+  image: any;
 }
 
-export default function LuxuryCategoryHome() {
-  const [categories, setCategories] = useState<Category[]>([])
+async function getCategories(): Promise<Category[]> {
+  const query = `*[_type == "category"]{
+    title,
+    slug,
+    image
+  }`;
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const query = `*[_type == "category"]{
-        title,
-        slug,
-        image
-      }`
+  return client.fetch(query);
+}
 
-      const result = await client.fetch(query)
-      setCategories(result)
-    }
-
-    fetchCategories()
-  }, [])
+export default async function LuxuryCategoryHome() {
+  const categories = await getCategories();
 
   return (
-    <section className="py-28">
-
-      {/* HEADER */}
-      <div className="text-center mb-20 px-6">
-        <p className="text-[10px] tracking-[0.5em] uppercase text-gray-400 mb-6">
+    <section className="pt-20 bg-white">
+      {/* Header */}
+      <div className="text-center mb-10 px-6">
+        <p className="text-[10px] tracking-[0.6em] uppercase text-gray-400 mb-5">
           Explore
         </p>
 
-        <h2 className="text-4xl md:text-5xl font-light tracking-tight">
+        <h2 className="text-4xl md:text-5xl font-light tracking-tight text-black">
           Shop by Collection
         </h2>
 
-        <p className="text-gray-500 text-sm mt-4 max-w-xl mx-auto">
-          Discover handcrafted jewelry designed with elegance and precision.
+        <p className="text-gray-500 text-sm mt-4 max-w-xl mx-auto leading-relaxed">
+          Discover timeless stainless steel jewellery designed with elegance and
+          durability for everyday wear.
         </p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6">
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10">
-
-          {categories.map((category, index) => {
+      {/* Categories */}
+      <div className="px-2">
+        <div className="flex gap-2 overflow-x-auto pb-6 snap-x snap-mandatory scroll-smooth no-scrollbar">
+          {categories.map((category) => {
             const imageUrl = category.image
               ? urlFor(category.image)
                   .width(600)
@@ -60,52 +55,53 @@ export default function LuxuryCategoryHome() {
                   .quality(70)
                   .auto("format")
                   .url()
-              : "/placeholder.png"
+              : "/placeholder.png";
 
             return (
-              <div key={category.slug.current}>
+              <div
+                key={category.slug.current}
+                className="min-w-[290px] sm:min-w-[360px] md:min-w-[430px] snap-start"
+              >
                 <Link
                   href={`/category/${category.slug.current}`}
                   className="group block"
-                  prefetch
                 >
-
-                  {/* IMAGE */}
-                  <div className="relative w-full h-[260px] sm:h-[340px] md:h-[420px] overflow-hidden bg-gray-100">
-
+                  <div className="relative h-[400px] md:h-[520px] w-full overflow-hidden bg-gray-100">
                     <Image
                       src={imageUrl}
                       alt={category.title}
                       fill
-                      sizes="(max-width: 768px) 50vw, 33vw"
-                      loading={index < 2 ? "eager" : "lazy"}
-                      priority={index === 0}
+                      loading="lazy"
+                      sizes="(max-width: 768px) 80vw, 33vw"
                       className="
                         object-cover
-                        transition-transform duration-700
+                        transition-transform
+                        duration-700
+                        ease-out
                         group-hover:scale-105
                       "
                     />
 
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition" />
+                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition" />
+
+                    <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#547792] group-hover:w-full transition-all duration-700" />
                   </div>
 
-                  {/* TEXT */}
-                  <div className="mt-5 text-center">
-                    <h3 className="text-xs md:text-sm tracking-[0.3em] uppercase font-light text-gray-800 group-hover:text-[#2FA084] transition">
+                  <div className="mt-5 text-left">
+                    <h3 className="text-xl md:text-m tracking-[0.35em] uppercase font-light text-black group-hover:text-[#547792] transition">
                       {category.title}
                     </h3>
 
-                    <div className="w-0 h-[1px] bg-[#2FA084] mx-auto mt-2 group-hover:w-12 transition-all duration-500" />
+                    <p className="text-[11px] text-gray-400 mt-2">
+                      Explore fine jewellery collection
+                    </p>
                   </div>
-
                 </Link>
               </div>
-            )
+            );
           })}
-
         </div>
       </div>
     </section>
-  )
+  );
 }

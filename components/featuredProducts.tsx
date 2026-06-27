@@ -33,7 +33,7 @@ export default async function FeaturedProducts() {
 
   return (
     <section
-      className="max-w-7xl mx-auto px-4 md:px-8 py-16"
+      className="max-w-8xl mx-auto px-1 md:px-1 py-16"
       aria-labelledby="featured-products-heading"
     >
       <div className="sr-only">
@@ -54,7 +54,7 @@ export default async function FeaturedProducts() {
       </header>
 
       <ul
-        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1"
         role="list"
       >
         {products.map((product) => (
