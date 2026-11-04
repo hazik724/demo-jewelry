@@ -37,7 +37,14 @@ export default defineType({
         defineField({ name: "addressLine2", type: "string", title: "Address Line 2" }),
         defineField({ name: "city", type: "string", title: "City" }),
         defineField({ name: "state", type: "string", title: "State" }),
-        defineField({ name: "postalCode", type: "string", title: "Postal Code" }),
+        defineField({
+          name: "postalCode",
+          type: "string",
+          title: "Postal Code (old orders only)",
+          description: "No longer collected at checkout. Shown only on older orders.",
+          readOnly: true,
+          hidden: ({ parent }) => !parent?.postalCode,
+        }),
         defineField({ name: "country", type: "string", title: "Country" }),
         defineField({ name: "deliveryInstructions", type: "text", title: "Delivery Instructions" }),
       ],
@@ -54,9 +61,16 @@ export default defineType({
           name: "item",
           title: "Item",
           fields: [
+            defineField({ name: "productId", type: "string", title: "Product ID" }),
             defineField({ name: "title", type: "string", title: "Product Title" }),
-            defineField({ name: "price", type: "number", title: "Price" }),
+            defineField({
+              name: "price",
+              type: "number",
+              title: "Price Paid (per item)",
+              description: "The actual price at the time of order, not the showcase price.",
+            }),
             defineField({ name: "quantity", type: "number", title: "Quantity" }),
+            defineField({ name: "image", type: "url", title: "Image URL" }),
           ],
           preview: {
             select: {
@@ -67,8 +81,8 @@ export default defineType({
             prepare({ title, quantity, price }) {
               return {
                 title: title,
-                subtitle: `Qty: ${quantity} • $${price}`,
-              };
+                subtitle: `Qty: ${quantity} • PKR ${price}`,
+              }
             },
           },
         }),
@@ -76,8 +90,14 @@ export default defineType({
     }),
 
     defineField({
+      name: "shippingFee",
+      title: "Shipping Fee",
+      type: "number",
+    }),
+
+    defineField({
       name: "totalAmount",
-      title: "Total Amount",
+      title: "Total Amount (items + shipping)",
       type: "number",
     }),
 
@@ -117,12 +137,13 @@ export default defineType({
       name: "customerName",
       total: "totalAmount",
       status: "status",
+      payment: "paymentMethod",
     },
-    prepare({ orderId, name, total, status }) {
+    prepare({ orderId, name, total, status, payment }) {
       return {
         title: `#${orderId} • ${name}`,
-        subtitle: `$${total} • ${status}`,
-      };
+        subtitle: `PKR ${total} • ${payment === "online" ? "Online" : "COD"} • ${status}`,
+      }
     },
   },
 })

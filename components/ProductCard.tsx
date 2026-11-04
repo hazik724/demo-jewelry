@@ -3,25 +3,20 @@ import Link from "next/link"
 import { urlFor } from "@/sanity/lib/image"
 import { useMemo, memo } from "react"
 
-interface Variant {
-  size?: string
-  color?: string
-  variantStock?: number
-}
-
 interface Product {
   _id: string
   title: string
   slug: { current: string }
   images: any[]
-  price: number
-  discountPrice?: number
-  variants?: Variant[]
+  price: number // actual price the customer pays
+  compareAtPrice?: number // showcase "was" price (display only)
 }
 
 interface Props {
   product: Product
 }
+
+const formatPKR = (n: number) => `PKR ${n.toLocaleString("en-PK")}`
 
 function ProductCard({ product }: Props) {
   /**
@@ -48,22 +43,34 @@ function ProductCard({ product }: Props) {
     }
   }, [product.images])
 
+  /* ---------------- SALE LOGIC ---------------- */
+  const onSale =
+    typeof product.compareAtPrice === "number" &&
+    typeof product.price === "number" &&
+    product.compareAtPrice > product.price
+
+  const discountPercent = onSale
+    ? Math.round(
+        ((product.compareAtPrice! - product.price) / product.compareAtPrice!) *
+          100
+      )
+    : 0
+
   return (
     <article className="group block">
-
       <Link
         href={`/product/${product.slug.current}`}
         aria-label={`View ${product.title} details`}
         className="block"
       >
-
         {/* IMAGE WRAPPER */}
-        <div className="
+        <div
+          className="
           relative w-full aspect-[4/5]
           bg-neutral-100
           overflow-hidden
-        ">
-
+        "
+        >
           {/* PRIMARY IMAGE */}
           <Image
             src={primaryImage}
@@ -99,46 +106,63 @@ function ProductCard({ product }: Props) {
           )}
 
           {/* LIGHT PREMIUM OVERLAY */}
-          <div className="
+          <div
+            className="
             absolute inset-0
             bg-gradient-to-t from-black/10 via-transparent to-transparent
             opacity-0 group-hover:opacity-100
             transition
-          " />
+          "
+          />
 
+          {/* SALE BADGE */}
+          {onSale && (
+            <div
+              className="pointer-events-none absolute left-0 top-2 z-10 flex items-center gap-1.5 bg-[#9B1C31] py-1 pl-2 pr-4 text-white shadow-md md:top-3 md:gap-2 md:py-1.5 md:pl-3 md:pr-5 [clip-path:polygon(0_0,100%_0,calc(100%-9px)_50%,100%_100%,0_100%)]"
+              aria-label={`${discountPercent}% off`}
+            >
+              <span className="text-[9px] font-semibold uppercase tracking-[0.18em] md:text-[10px]">
+                Sale
+              </span>
+              <span className="h-3 w-px bg-white/40" />
+              <span className="text-[11px] font-semibold leading-none md:text-xs">
+                {discountPercent}% off
+              </span>
+            </div>
+          )}
         </div>
 
         {/* TEXT */}
         <div className="pt-4 space-y-1">
-
-          <h3 className="
+          <h3
+            className="
             text-sm md:text-base
             font-normal
             tracking-wide
             text-neutral-900
             line-clamp-2
-          ">
+          "
+          >
             {product.title}
           </h3>
 
-          <div className="flex items-center gap-2 text-sm">
-
-            <span className="text-black font-medium">
-              PKR {product.discountPrice ?? product.price}
+          <div className="flex flex-wrap items-baseline gap-x-2 text-sm">
+            <span
+              className={
+                onSale ? "font-medium text-[#9B1C31]" : "font-medium text-black"
+              }
+            >
+              {formatPKR(product.price)}
             </span>
 
-            {product.discountPrice && (
-              <span className="line-through text-neutral-400">
-                PKR {product.price}
+            {onSale && (
+              <span className="text-neutral-400 line-through">
+                {formatPKR(product.compareAtPrice!)}
               </span>
             )}
-
           </div>
-
         </div>
-
       </Link>
-
     </article>
   )
 }

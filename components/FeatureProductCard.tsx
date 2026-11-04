@@ -9,13 +9,15 @@ interface Product {
   title: string
   slug: { current: string }
   images: any[]
-  price: number
-  discountPrice?: number
+  price: number // actual price the customer pays
+  compareAtPrice?: number // showcase "was" price (display only)
 }
 
 interface Props {
   product: Product
 }
+
+const formatPKR = (n: number) => `PKR ${n.toLocaleString("en-PK")}`
 
 function FeaturedProductCard({ product }: Props) {
   /**
@@ -43,6 +45,19 @@ function FeaturedProductCard({ product }: Props) {
     }
   }, [product.images])
 
+  /* ---------------- SALE LOGIC ---------------- */
+  const onSale =
+    typeof product.compareAtPrice === "number" &&
+    typeof product.price === "number" &&
+    product.compareAtPrice > product.price
+
+  const discountPercent = onSale
+    ? Math.round(
+        ((product.compareAtPrice! - product.price) / product.compareAtPrice!) *
+          100
+      )
+    : 0
+
   return (
     <div
       className="
@@ -56,7 +71,6 @@ function FeaturedProductCard({ product }: Props) {
         transform-gpu
       "
     >
-
       {/* IMAGE WRAPPER */}
       <Link
         href={`/product/${product.slug.current}`}
@@ -64,7 +78,6 @@ function FeaturedProductCard({ product }: Props) {
         className="block"
       >
         <div className="relative w-full aspect-[4/5] overflow-hidden bg-gray-50">
-
           {/* PRIMARY IMAGE (LCP SAFE) */}
           <Image
             src={primaryImage}
@@ -101,42 +114,65 @@ function FeaturedProductCard({ product }: Props) {
           )}
 
           {/* PREMIUM LIGHT OVERLAY */}
-          <div className="
+          <div
+            className="
             absolute inset-0
             bg-gradient-to-t from-black/10 via-transparent to-transparent
             opacity-0 group-hover:opacity-100
             transition
-          " />
+          "
+          />
+
+          {/* SALE BADGE */}
+          {onSale && (
+            <div
+              className="pointer-events-none absolute left-0 top-2 z-10 flex items-center gap-1.5 bg-[#9B1C31] py-1 pl-2 pr-4 text-white shadow-md md:top-3 md:gap-2 md:py-1.5 md:pl-3 md:pr-5 [clip-path:polygon(0_0,100%_0,calc(100%-9px)_50%,100%_100%,0_100%)]"
+              aria-label={`${discountPercent}% off`}
+            >
+              <span className="text-[9px] font-semibold uppercase tracking-[0.18em] md:text-[10px]">
+                Sale
+              </span>
+              <span className="h-3 w-px bg-white/40" />
+              <span className="text-[11px] font-semibold leading-none md:text-xs">
+                {discountPercent}% off
+              </span>
+            </div>
+          )}
         </div>
       </Link>
 
       {/* CONTENT */}
       <div className="p-4 space-y-2">
-
         <Link href={`/product/${product.slug.current}`}>
-          <h3 className="
+          <h3
+            className="
             text-sm md:text-base font-medium
             line-clamp-2 min-h-[40px]
             hover:underline
-          ">
+          "
+          >
             {product.title}
           </h3>
         </Link>
 
         {/* PRICE */}
-        <div className="flex items-center gap-2">
-          <span className="text-[#740A03] font-semibold text-sm md:text-base">
-            PKR {product.discountPrice ?? product.price}
+        <div className="flex flex-wrap items-baseline gap-x-2">
+          <span
+            className={`font-semibold text-sm md:text-base ${
+              onSale ? "text-[#9B1C31]" : "text-black"
+            }`}
+          >
+            {formatPKR(product.price)}
           </span>
 
-          {product.discountPrice && (
+          {onSale && (
             <span className="line-through text-gray-400 text-xs">
-              PKR {product.price}
+              {formatPKR(product.compareAtPrice!)}
             </span>
           )}
         </div>
 
-        {/* CART (optimized image only) */}
+        {/* CART (actual price only, optimized image) */}
         <div className="pt-6">
           <CartButton
             id={product._id}
@@ -146,7 +182,6 @@ function FeaturedProductCard({ product }: Props) {
             image={primaryImage}
           />
         </div>
-
       </div>
     </div>
   )

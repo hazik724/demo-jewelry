@@ -7,13 +7,84 @@ import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import DeliveryText from "@/components/deliverytext"
 
-export default function CheckoutPage() {
+// ─── Design tokens ────────────────────────────────────────────────────────────
+// Brand:    #2FA084  (Jhumkara teal)
+// Ink:      #1a1f2e
+// Muted:    #6b7280
+// Surface:  #f8f9fb
+// Border:   #e4e8ed
+// Error:    #e05252
+// ──────────────────────────────────────────────────────────────────────────────
 
-const [paymentMethod, setPaymentMethod] = useState("cod")
-  const [errors, setErrors] = useState<any>({})
+const BRAND = "#2FA084"
+const COD_FEE = 400
+const ONLINE_FEE = 250
+const SHIPPING_SAVING = COD_FEE - ONLINE_FEE
+
+const pkr = (n: number) => `PKR ${n.toLocaleString("en-PK")}`
+
+const PAYMENT_ACCOUNTS = [
+  {
+    bank: "HBL Bank",
+    tag: "Bank Transfer",
+    title: "Hafiza Maliha",
+    detailLabel: "IBAN",
+    detail: "PK85HABB0004317000075303",
+  },
+  {
+    bank: "Meezan Bank",
+    tag: "Bank Transfer",
+    title: "Hafiza Maliha Jamshaid",
+    detailLabel: "IBAN",
+    detail: "PK69MEZN0035010105676255",
+  },
+  {
+    bank: "JazzCash",
+    tag: "Mobile Wallet",
+    title: "Hafiza Maliha Jamshaid",
+    detailLabel: "Number",
+    detail: "0303 7830023",
+  },
+]
+
+type FormKey =
+  | "customerName"
+  | "email"
+  | "phone"
+  | "addressLine1"
+  | "addressLine2"
+  | "city"
+  | "state"
+  | "country"
+  | "deliveryInstructions"
+
+const FIELDS: {
+  name: FormKey
+  label: string
+  type?: string
+  required?: boolean
+  autoComplete?: string
+  inputMode?: "tel" | "email" | "text"
+  fullWidth?: boolean
+}[] = [
+  { name: "customerName", label: "Full Name", required: true, autoComplete: "name" },
+  { name: "email", label: "Email Address", type: "email", required: true, autoComplete: "email", inputMode: "email" },
+  { name: "phone", label: "Phone Number", type: "tel", required: true, autoComplete: "tel", inputMode: "tel" },
+  { name: "addressLine1", label: "Address Line 1", required: true, autoComplete: "address-line1", fullWidth: true },
+  { name: "addressLine2", label: "Address Line 2 (optional)", autoComplete: "address-line2", fullWidth: true },
+  { name: "city", label: "City", required: true, autoComplete: "address-level2" },
+  { name: "state", label: "State / Province", required: true, autoComplete: "address-level1" },
+  { name: "country", label: "Country", required: true, autoComplete: "country-name" },
+  { name: "deliveryInstructions", label: "Delivery Instructions (optional)", fullWidth: true },
+]
+
+export default function CheckoutPage() {
+  const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod")
+  const [errors, setErrors] = useState<Partial<Record<FormKey, string>>>({})
+  const [submitError, setSubmitError] = useState("")
   const { items, clearCart } = useCartStore()
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<Record<FormKey, string>>({
     customerName: "",
     email: "",
     phone: "",
@@ -21,8 +92,7 @@ const [paymentMethod, setPaymentMethod] = useState("cod")
     addressLine2: "",
     city: "",
     state: "",
-    postalCode: "",
-    country: "",
+    country: "Pakistan",
     deliveryInstructions: "",
   })
 
@@ -30,37 +100,54 @@ const [paymentMethod, setPaymentMethod] = useState("cod")
   const [success, setSuccess] = useState(false)
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shippingFee = paymentMethod === "online" ? 250 : 400
-const finalTotal = total + shippingFee
+  const shippingFee = paymentMethod === "online" ? ONLINE_FEE : COD_FEE
+  const finalTotal = total + shippingFee
 
-  const handleChange = (e: any) =>
-    setForm({ ...form, [e.target.name]: e.target.value })
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const name = e.target.name as FormKey
+    setForm((f) => ({ ...f, [name]: e.target.value }))
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }))
+  }
+
+  const validate = () => {
+    const e: Partial<Record<FormKey, string>> = {}
+
+    if (!form.customerName.trim()) e.customerName = "Full name is required"
+
+    if (!form.email.trim()) e.email = "Email is required"
+    else if (!/^\S+@\S+\.\S+$/.test(form.email.trim()))
+      e.email = "Enter a valid email address"
+
+    if (!form.phone.trim()) e.phone = "Phone number is required"
+    else if (form.phone.replace(/\D/g, "").length < 10)
+      e.phone = "Enter a valid phone number"
+
+    if (!form.addressLine1.trim()) e.addressLine1 = "Address is required"
+    if (!form.city.trim()) e.city = "City is required"
+    if (!form.state.trim()) e.state = "State is required"
+    if (!form.country.trim()) e.country = "Country is required"
+
+    return e
+  }
 
   const handleOrder = async () => {
-    const newErrors: any = {}
+    setSubmitError("")
 
-if (!form.customerName) newErrors.customerName = "Full name is required"
-if (!form.email) newErrors.email = "Email is requierd"
-if (!form.phone) newErrors.phone = "Phone number is required"
-if (!form.addressLine1) newErrors.addressLine1 = "Address is required"
-if (!form.city) newErrors.city = "City is required"
-if (!form.state) newErrors.state = "State is required"
-if (!form.postalCode) newErrors.postalCode = "Postal code is required"
+    const newErrors = validate()
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
 
-if (Object.keys(newErrors).length > 0) {
-  setErrors(newErrors)
-  return
-}
-
-setErrors({})
-
+    setErrors({})
     setLoading(true)
 
     try {
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-
         body: JSON.stringify({
           customerName: form.customerName,
           email: form.email,
@@ -69,21 +156,23 @@ setErrors({})
           addressLine2: form.addressLine2,
           city: form.city,
           state: form.state,
-          postalCode: form.postalCode,
           country: form.country,
           deliveryInstructions: form.deliveryInstructions,
 
           userId: null,
 
+          paymentMethod, // "cod" | "online"
+
           products: items.map((item) => ({
+            _id: item._id, // lets the server verify the real price
             title: item.title,
             price: item.price,
             quantity: item.quantity,
             image: item.image,
           })),
 
+          shippingFee,
           totalAmount: finalTotal,
-          
         }),
       })
 
@@ -92,435 +181,520 @@ setErrors({})
       if (json.success) {
         clearCart()
         setSuccess(true)
+      } else {
+        setSubmitError(
+          "We couldn't place your order. Please check your details and try again."
+        )
       }
     } catch (err) {
       console.error(err)
+      setSubmitError("Network error. Please check your connection and try again.")
     } finally {
       setLoading(false)
     }
   }
 
+  // ── Empty cart ───────────────────────────────────────────────────────────────
   if (items.length === 0 && !success)
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] text-center relative">
+      <div className="flex min-h-[80vh] flex-col items-center justify-center px-4 text-center">
+        <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full border border-[#e4e8ed] bg-[#f8f9fb]">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-9 w-9"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke={BRAND}
+            strokeWidth={1.4}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 8h14l-1.5 11h-11L5 8zM9 8V6a3 3 0 016 0v2"
+            />
+          </svg>
+        </div>
 
-      {/* Glow background */}
-      <div className="absolute w-[400px] h-[400px] bg-gold-500/10 blur-[120px] rounded-full"></div>
-    
-      {/* Icon */}
-      <div className="w-24 h-24 flex items-center justify-center rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-8 shadow-xl">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-10 h-10 text-gold-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+        <h2 className="mb-4 text-3xl font-light tracking-tight text-[#1a1f2e] md:text-4xl">
+          Your bag is empty
+        </h2>
+
+        <p className="mb-10 max-w-sm text-[0.95rem] leading-relaxed text-[#6b7280]">
+          Discover our jewelry collection and find something you&apos;ll love.
+        </p>
+
+        <Link
+          href="/product"
+          className="bg-[#2FA084] px-10 py-4 text-sm font-medium uppercase tracking-[0.15em] text-white transition hover:brightness-110"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-            d="M5 8h14l-1.5 11h-11L5 8zM9 8V6a3 3 0 016 0v2"
-          />
-        </svg>
+          Browse Products
+        </Link>
       </div>
-    
-      {/* Title */}
-      <h2 className="text-4xl md:text-5xl font-light tracking-wide mb-4 text-black">
-        Your Bag is Empty
-      </h2>
-    
-      {/* Description */}
-      <p className="text-gray-400 max-w-md mb-10 leading-relaxed">
-        Looks like you haven’t added anything yet. Discover our premium collection
-        and find something you’ll love.
-      </p>
-    
-      {/* Button */}
-      <Link href="/product">
-        <button className="group relative overflow-hidden bg-[#2FA084] text-white uppercase tracking-widest font-semibold py-4 px-10 rounded-2xl shadow-2xl transition-all duration-300">
-    
-          <span className="relative z-10">Browse Products</span>
-    
-          {/* hover glow */}
-          <span className="absolute inset-0 bg-gold-500 opacity-0 group-hover:opacity-20 transition duration-300"></span>
-    
-        </button>
-      </Link>
-    
-    </div>
     )
 
+  // ── Styles ───────────────────────────────────────────────────────────────────
+  const inputClass = (hasError: boolean) =>
+    `w-full border bg-white px-3.5 py-3 text-[0.9rem] text-[#1a1f2e] outline-none transition-colors focus:border-[#2FA084] ${
+      hasError ? "border-[#e05252]" : "border-[#e4e8ed]"
+    }`
+
+  const stepBadge =
+    "flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#2FA084] text-xs font-semibold text-white"
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white px-4 md:px-12 py-16">
-      <h1 className="text-5xl md:text-6xl font-light text-center mb-16 tracking-widest">
-        Checkout
-      </h1>
+    <div className="min-h-screen overflow-x-hidden bg-[#f8f9fb] text-[#1a1f2e]">
+      {/* ── Page header ── */}
+      <div className="border-b border-[#e4e8ed] bg-white px-4 py-14 text-center">
+        <p className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-[#2FA084]">
+          Secure Checkout
+        </p>
+        <h1 className="text-4xl font-light tracking-tight text-[#1a1f2e] md:text-5xl">
+          Complete Your Order
+        </h1>
+      </div>
 
-      <div className="grid md:grid-cols-2 gap-16">
+      {/* ── Trust bar ── */}
+      <div className="flex flex-wrap justify-center gap-6 bg-[#2FA084] px-4 py-4 text-[0.7rem] font-medium uppercase tracking-[0.15em] text-white/90 md:gap-12">
+        {["SSL Secured", "Cash on Delivery", "Fast Delivery"].map((t) => (
+          <span key={t}>{t}</span>
+        ))}
+      </div>
 
-        {/* FORM */}
-
+      {/* ── Main grid ── */}
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 py-12 md:grid-cols-[1fr_400px] md:px-8">
+        {/* ── LEFT: Form ── */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="bg-black/50 backdrop-blur-md p-8  shadow-2xl space-y-8 border border-[#2FA084]"
+          transition={{ duration: 0.5 }}
+          className="min-w-0"
         >
+          {/* Shipping details */}
+          <div className="mb-6 border border-[#e4e8ed] bg-white p-5 md:p-8">
+            <div className="mb-8 flex items-center gap-3">
+              <span className={stepBadge}>1</span>
+              <h2 className="text-lg font-normal tracking-[0.04em]">
+                Shipping Details
+              </h2>
+            </div>
 
-          <h2 className="text-2xl font-light border-b border-[#2FA084] pb-2">
-            Shipping Details
-          </h2>
+            <div className="grid gap-5 md:grid-cols-2">
+              {FIELDS.map((field) => {
+                const error = errors[field.name]
+                const id = `checkout-${field.name}`
 
-          {[
-            { name: "customerName", label: "Full Name *" },
-            { name: "email", label: "Email *", type: "email" },
-            { name: "phone", label: "Phone *" },
-            { name: "addressLine1", label: "Address Line 1 *" },
-            { name: "addressLine2", label: "Address Line 2" },
-            { name: "city", label: "City *" },
-            { name: "state", label: "State/Province *" },
-            { name: "postalCode", label: "Postal Code *" },
-            { name: "country", label: "Country *" },
-            { name: "deliveryInstructions", label: "Delivery Instructions" },
-          ].map((field) => (
+                return (
+                  <div
+                    key={field.name}
+                    className={field.fullWidth ? "md:col-span-2" : ""}
+                  >
+                    <label
+                      htmlFor={id}
+                      className="mb-1.5 block text-xs font-medium uppercase tracking-[0.1em] text-[#6b7280]"
+                    >
+                      {field.label}
+                      {field.required && (
+                        <span className="ml-1 text-[#2FA084]">*</span>
+                      )}
+                    </label>
 
-            <div key={field.name} className="space-y-2">
+                    {field.name === "deliveryInstructions" ? (
+                      <textarea
+                        id={id}
+                        name={field.name}
+                        value={form[field.name]}
+                        onChange={handleChange}
+                        rows={3}
+                        className={inputClass(!!error)}
+                      />
+                    ) : (
+                      <input
+                        id={id}
+                        type={field.type || "text"}
+                        name={field.name}
+                        value={form[field.name]}
+                        onChange={handleChange}
+                        autoComplete={field.autoComplete}
+                        inputMode={field.inputMode}
+                        aria-invalid={!!error}
+                        className={inputClass(!!error)}
+                      />
+                    )}
 
-            <label className="text-sm text-gray-400">
-              {field.label}
-            </label>
-          
-            {field.name === "deliveryInstructions" ? (
-          
-              <textarea
-                name={field.name}
-                value={form[field.name as keyof typeof form]}
-                onChange={handleChange}
-                rows={3}
-                className={`w-full bg-black/40 border rounded-xl px-4 py-3 outline-none transition
-                ${errors[field.name] 
-                  ? "border-red-500 focus:border-red-500" 
-                  : "border-white/20 focus:border-gold-500"}
-                `}
-                placeholder={field.label}
-              />
-          
-            ) : (
-          
-              <input
-                type={field.type || "text"}
-                name={field.name}
-                value={form[field.name as keyof typeof form]}
-                onChange={handleChange}
-                className={`w-full bg-black/40 border rounded-xl px-4 py-3 outline-none transition
-                ${errors[field.name] 
-                  ? "border-red-500 focus:border-red-500" 
-                  : "border-white/20 focus:border-gold-500"}
-                `}
-                placeholder={field.label}
-              />
-          
-            )}
-          
-            {errors[field.name] && (
-              <p className="text-red-400 text-sm">
-                {errors[field.name]}
-              </p>
-            )}
-          
+                    {error && (
+                      <p className="mt-1.5 text-xs text-[#e05252]">{error}</p>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
 
-          ))}
+          {/* Payment method */}
+          <div className="border border-[#e4e8ed] bg-white p-5 md:p-8">
+            <div className="mb-8 flex items-center gap-3">
+              <span className={stepBadge}>2</span>
+              <h2 className="text-lg font-normal tracking-[0.04em]">
+                Payment Method
+              </h2>
+            </div>
 
-          {/* Payment */}
-
-        <div className="mt-6 space-y-4">
-
-  {/* Title */}
-  <h3 className="text-lg font-light tracking-wide">
-    Payment Method
-  </h3>
-
-  {/* Card Container */}
-  <div className="space-y-3">
-
-    {/* COD CARD */}
-    <label className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer border transition-all duration-300
-      ${paymentMethod === "cod"
-        ? "border-[#2FA084] bg-[#2FA084]/10 shadow-[0_0_25px_rgba(47,160,132,0.15)]"
-        : "border-white/10 bg-black/30 hover:border-white/20"}
-    `}>
-
-      <div className="flex items-center gap-3">
-
-        <input
-          type="radio"
-          name="payment"
-          checked={paymentMethod === "cod"}
-          onChange={() => setPaymentMethod("cod")}
-          className="accent-[#2FA084]"
-        />
-
-        <div>
-          <p className="text-white font-medium">Cash on Delivery</p>
-          <p className="text-xs text-gray-400">Pay when you receive your order</p>
-        </div>
-
-      </div>
-
-      <span className="text-xs text-gray-400">
-         PKR 400
-      </span>
-
-    </label>
-
-    {/* ONLINE CARD */}
-    <label className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer border transition-all duration-300
-      ${paymentMethod === "online"
-        ? "border-[#2FA084] bg-[#2FA084]/10 shadow-[0_0_25px_rgba(47,160,132,0.15)]"
-        : "border-white/10 bg-black/30 hover:border-white/20"}
-    `}>
-
-      <div className="flex items-center gap-3">
-
-        <input
-          type="radio"
-          name="payment"
-          checked={paymentMethod === "online"}
-          onChange={() => setPaymentMethod("online")}
-          className="accent-[#2FA084]"
-        />
-
-        <div>
-          <p className="text-white font-medium">Online Payment</p>
-          <p className="text-xs text-gray-400">Bank / Easypaisa / JazzCash</p>
-        </div>
-
-      </div>
-
-      <span className="text-xs text-[#2FA084] font-semibold">
-         PKR 250
-      </span>
-
-    </label>
-
-  </div>
-
-  {/* Info Line */}
-  <div className="mt-4 p-3 rounded-xl border border-[#2FA084]/30 bg-[#2FA084]/10 text-sm text-gray-300">
-    Get <span className="text-[#2FA084] font-medium">discounted shipping</span> when you choose online payment.
-  </div>
-
-</div>
-{paymentMethod === "online" && (
-  <div className="mt-5 p-[1px] rounded-2xl bg-gradient-to-r from-[#2FA084] via-emerald-400 to-[#2FA084] shadow-[0_0_40px_rgba(47,160,132,0.25)]">
-
-    <div className="bg-black/80 backdrop-blur-xl rounded-2xl p-6 space-y-6">
-
-      {/* Header */}
-      <div className="text-center">
-        <h4 className="text-lg font-light text-white tracking-wide">
-          Secure Payment Details
-        </h4>
-        <p className="text-xs text-gray-400 mt-1">
-          Complete payment and share screenshot for confirmation
-        </p>
-      </div>
-
-      <div className="h-px bg-white/10" />
-
-      {/* HBL */}
-      <div className="space-y-2">
-        <p className="text-[#2FA084] text-sm font-medium tracking-wide">
-          HBL Bank
-        </p>
-
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">Account Title</span>
-          <span className="text-white">Hafiza Maliha</span>
-        </div>
-
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">IBAN</span>
-          <span className="text-white text-right break-all">
-            PK85HABB0004317000075303
-          </span>
-        </div>
-      </div>
-
-      <div className="h-px bg-white/10" />
-
-      {/* Meezan */}
-      <div className="space-y-2">
-        <p className="text-[#2FA084] text-sm font-medium tracking-wide">
-          Meezan Bank
-        </p>
-
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">Account Title</span>
-          <span className="text-white">Hafiza Maliha Jamshaid</span>
-        </div>
-
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">IBAN</span>
-          <span className="text-white text-right break-all">
-            PK69MEZN0035010105676255
-          </span>
-        </div>
-      </div>
-
-      <div className="h-px bg-white/10" />
-
-      {/* JazzCash */}
-      <div className="space-y-2">
-        <p className="text-[#2FA084] text-sm font-medium tracking-wide">
-          JazzCash
-        </p>
-
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">Account Title</span>
-          <span className="text-white">Hafiza Maliha Jamshaid</span>
-        </div>
-
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">Number</span>
-          <span className="text-white">
-            0303 7830023
-          </span>
-        </div>
-      </div>
-
-      {/* Bottom Note */}
-      <div className="text-s text-gray-400 bg-white/5 border border-white/10 rounded-xl p-3 text-center">
-        After payment, send screenshot on WhatsApp 03083366699 to confirm your order.
-      </div>
-
-      {/* Highlight */}
-      <div className="text-center text-sm text-[#2FA084] font-medium tracking-wide">
-         Shipping Discount Applied !
-      </div>
-
-    </div>
-  </div>
-)}
-        </motion.div>
-
-        {/* ORDER SUMMARY */}
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="bg-black/50 backdrop-blur-md p-8  shadow-2xl border border-[#2FA084] flex flex-col space-y-6"
-        >
-
-          <h2 className="text-2xl font-light border-b border-[#2FA084] pb-2">
-            Order Summary
-          </h2>
-
-          <div className="space-y-4 max-h-[500px] overflow-y-auto">
-
-            {items.map((item) => (
-
-              <div key={item._id} className="flex gap-4 items-center">
-
-                <div className="relative w-20 h-28 bg-gray-800  overflow-hidden border border-gold-500">
-                  <Image src={item.image} alt={item.title} fill className="object-cover" />
+            <div className="space-y-3">
+              {/* COD */}
+              <label
+                className={`flex cursor-pointer items-center justify-between gap-3 border-[1.5px] px-5 py-4 transition-all duration-200 ${
+                  paymentMethod === "cod"
+                    ? "border-[#2FA084] bg-[#2FA084]/5"
+                    : "border-[#e4e8ed] bg-white"
+                }`}
+              >
+                <div className="flex min-w-0 items-center gap-4">
+                  <input
+                    type="radio"
+                    name="payment"
+                    checked={paymentMethod === "cod"}
+                    onChange={() => setPaymentMethod("cod")}
+                    className="h-4 w-4 shrink-0 accent-[#2FA084]"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-[0.9rem] font-medium">Cash on Delivery</p>
+                    <p className="mt-0.5 text-[0.78rem] text-[#6b7280]">
+                      Pay when your order arrives
+                    </p>
+                  </div>
                 </div>
 
-                <div className="flex-1">
-                  <p className="font-light text-lg">{item.title}</p>
+                <span className="shrink-0 text-sm font-semibold">
+                  {pkr(COD_FEE)}
+                </span>
+              </label>
 
-                  <p className="text-gray-400 text-sm">
-                    {item.quantity} × PKR {item.price.toFixed(2)}
+              {/* Online */}
+              <label
+                className={`flex cursor-pointer items-center justify-between gap-3 border-[1.5px] px-5 py-4 transition-all duration-200 ${
+                  paymentMethod === "online"
+                    ? "border-[#2FA084] bg-[#2FA084]/5"
+                    : "border-[#e4e8ed] bg-white"
+                }`}
+              >
+                <div className="flex min-w-0 items-center gap-4">
+                  <input
+                    type="radio"
+                    name="payment"
+                    checked={paymentMethod === "online"}
+                    onChange={() => setPaymentMethod("online")}
+                    className="h-4 w-4 shrink-0 accent-[#2FA084]"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-[0.9rem] font-medium">Online Payment</p>
+                    <p className="mt-0.5 text-[0.78rem] text-[#6b7280]">
+                      Bank · Easypaisa · JazzCash
+                    </p>
+                  </div>
+                </div>
+
+                <div className="shrink-0 text-right">
+                  <span className="text-sm font-semibold text-[#1f7a63]">
+                    {pkr(ONLINE_FEE)}
+                  </span>
+                  <p className="text-[0.7rem] text-[#1f7a63]">
+                    Save {pkr(SHIPPING_SAVING)}
                   </p>
                 </div>
+              </label>
+            </div>
 
-                <p className="font-semibold text-gold-500">
-                  PKR {(item.price * item.quantity).toFixed(2)}
-                </p>
+            {/* Shipping discount note */}
+            <div className="mt-4 flex items-center gap-3 border-l-[3px] border-[#2FA084] bg-[#2FA084]/5 px-4 py-3 text-sm text-[#1f7a63]">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="shrink-0"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4m0 4h.01" />
+              </svg>
+              <span>
+                Choose online payment and save {pkr(SHIPPING_SAVING)} on shipping.
+              </span>
+            </div>
 
+            {/* Online payment details */}
+            {paymentMethod === "online" && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-6 border border-[#e4e8ed]"
+              >
+                {/* Header */}
+                <div className="flex items-center gap-3 bg-[#2FA084] px-4 py-5 text-white md:px-6">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="shrink-0"
+                  >
+                    <rect x="3" y="11" width="18" height="11" rx="2" />
+                    <path d="M7 11V7a5 5 0 0110 0v4" />
+                  </svg>
+                  <div className="min-w-0">
+                    <p className="text-[0.9rem] font-medium">
+                      Secure Payment Details
+                    </p>
+                    <p className="mt-px text-xs opacity-80">
+                      Transfer to any of the accounts below
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4 p-4 md:p-6">
+                  {PAYMENT_ACCOUNTS.map((acc) => (
+                    <div
+                      key={acc.bank}
+                      className="border border-[#e4e8ed] p-4 md:p-5"
+                    >
+                      <div className="mb-3 flex items-center justify-between gap-2">
+                        <p className="text-[0.9rem] font-semibold">{acc.bank}</p>
+                        <span className="shrink-0 bg-[#2FA084]/10 px-2 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#1f7a63]">
+                          {acc.tag}
+                        </span>
+                      </div>
+
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between gap-2">
+                          <span className="text-[#6b7280]">Account Title</span>
+                          <span className="text-right font-medium">
+                            {acc.title}
+                          </span>
+                        </div>
+                        <div className="flex items-start justify-between gap-4">
+                          <span className="shrink-0 text-[#6b7280]">
+                            {acc.detailLabel}
+                          </span>
+                          <span className="min-w-0 break-all text-right font-mono text-[0.82rem] font-medium">
+                            {acc.detail}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* WhatsApp confirmation */}
+                  <div className="border-l-[3px] border-[#2FA084] bg-[#2FA084]/5 px-4 py-3 text-left text-sm">
+                    After payment, send your screenshot on{" "}
+                    <span className="font-semibold text-[#1f7a63]">
+                      WhatsApp 03083366699
+                    </span>{" "}
+                    to confirm your order.
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* ── RIGHT: Order summary ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="flex min-w-0 flex-col"
+        >
+          <div className="static border border-[#e4e8ed] bg-white md:sticky md:top-6">
+            {/* Summary header */}
+            <div className="border-b border-[#e4e8ed] px-6 py-5">
+              <p className="mb-0.5 text-xs font-semibold uppercase tracking-[0.15em] text-[#2FA084]">
+                Your Order
+              </p>
+              <p className="text-[1.15rem] font-light">
+                {items.length} item{items.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+
+            {/* Items list */}
+            <div className="max-h-80 space-y-4 overflow-y-auto border-b border-[#e4e8ed] px-6 py-4">
+              {items.map((item) => (
+                <div key={item._id} className="flex items-center gap-4">
+                  <div className="relative h-20 w-16 shrink-0 overflow-hidden border border-[#e4e8ed] bg-[#f8f9fb]">
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[0.87rem]">{item.title}</p>
+                    <p className="mt-0.5 text-[0.78rem] text-[#6b7280]">
+                      Qty {item.quantity} × {pkr(item.price)}
+                    </p>
+                  </div>
+                  <p className="shrink-0 text-[0.87rem] font-semibold">
+                    {pkr(item.price * item.quantity)}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Totals */}
+            <div className="space-y-3 px-6 py-5">
+              <div className="flex justify-between text-sm text-[#6b7280]">
+                <span>Subtotal</span>
+                <span className="text-[#1a1f2e]">{pkr(total)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-[#6b7280]">
+                <span>Shipping</span>
+                <span className="font-medium text-[#1a1f2e]">
+                  {pkr(shippingFee)}
+                </span>
+              </div>
+              <div className="mt-1 flex justify-between border-t border-[#e4e8ed] pt-4 text-[1.05rem] font-semibold">
+                <span>Total</span>
+                <span>{pkr(finalTotal)}</span>
               </div>
 
-            ))}
+              <div className="pt-2 text-sm text-[#6b7280]">
+                <DeliveryText />
+              </div>
+            </div>
 
+            {/* CTA */}
+            <div className="px-6 pb-6">
+              {submitError && (
+                <p
+                  role="alert"
+                  className="mb-3 border-l-[3px] border-[#e05252] bg-[#e05252]/5 px-3 py-2 text-sm text-[#e05252]"
+                >
+                  {submitError}
+                </p>
+              )}
+
+              <motion.button
+                onClick={handleOrder}
+                disabled={loading || success}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                className="w-full bg-[#2FA084] py-4 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-all duration-200 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg
+                      className="h-4 w-4 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
+                    </svg>
+                    Processing…
+                  </span>
+                ) : success ? (
+                  "✓ Order Placed"
+                ) : (
+                  "Place Order"
+                )}
+              </motion.button>
+
+              {/* Security note */}
+              <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[#6b7280]">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="shrink-0"
+                >
+                  <rect x="3" y="11" width="18" height="11" rx="2" />
+                  <path d="M7 11V7a5 5 0 0110 0v4" />
+                </svg>
+                <span>SSL encrypted · Your data is safe</span>
+              </div>
+            </div>
           </div>
-
-        <div className="space-y-3 border-t border-gold-500 pt-4 text-lg">
-
-  <div className="flex justify-between">
-    <span>Subtotal</span>
-    <span>PKR {total.toFixed(2)}</span>
-  </div>
-
-  <div className="flex justify-between">
-    <span>Shipping</span>
-    <span className="text-[#2FA084] font-semibold">
-      PKR {shippingFee}
-    </span>
-  </div>
-
-  <div className="flex justify-between font-bold text-xl border-t border-white/20 pt-3">
-    <span>Total</span>
-    <span>PKR {finalTotal.toFixed(2)}</span>
-  </div>
-<DeliveryText/>
-</div>
-
-          <motion.button
-            onClick={handleOrder}
-            disabled={loading || success}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full py-4 bg-[#2FA084] text-white font-light text-lg uppercase tracking-widest hover:brightness-110 transition"
-          >
-            {loading ? "Processing..." : success ? "Order Placed!" : "Place Order"}
-          </motion.button>
-
         </motion.div>
-        
-
       </div>
 
-      {/* SUCCESS MODAL */}
-
+      {/* ── Success modal ── */}
       <AnimatePresence>
         {success && (
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[#1a1f2e]/75 px-4 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="order-success-title"
           >
-
             <motion.div
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.8 }}
-              className="bg-black/90 text-white p-12 rounded-3xl shadow-2xl text-center max-w-lg border border-gold-500"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 24, stiffness: 260 }}
+              className="w-full max-w-md border border-[#e4e8ed] bg-white px-10 py-12 text-center"
             >
+              {/* Checkmark */}
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#2FA084]">
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#fff"
+                  strokeWidth="2.5"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
 
-              <h2 className="text-3xl font-light font-semibold mb-4">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#2FA084]">
+                Order Confirmed
+              </p>
+
+              <h2
+                id="order-success-title"
+                className="mb-3 text-2xl font-light tracking-tight md:text-3xl"
+              >
                 Thank you!
               </h2>
 
-              <p className="text-gray-400 mb-6">
-                Your order has been successfully placed.
+              <p className="mb-8 text-[0.9rem] leading-relaxed text-[#6b7280]">
+                Your order has been placed successfully. You&apos;ll receive a
+                confirmation shortly.
               </p>
 
-              <button
+              <Link
+                href="/product"
                 onClick={() => setSuccess(false)}
-                className="px-6 py-3 bg-white text-black font-light rounded-lg hover:brightness-110 transition"
+                className="block w-full bg-[#2FA084] py-3.5 text-sm font-medium uppercase tracking-[0.15em] text-white transition hover:brightness-110"
               >
-                Close
-              </button>
-
+                Continue Shopping
+              </Link>
             </motion.div>
-
           </motion.div>
-
         )}
       </AnimatePresence>
-
     </div>
   )
 }

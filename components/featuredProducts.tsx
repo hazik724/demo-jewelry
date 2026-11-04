@@ -7,8 +7,8 @@ interface Product {
   title: string
   slug: { current: string }
   images: any[]
-  price: number
-  discountPrice?: number
+  price: number // actual price the customer pays
+  compareAtPrice?: number // showcase "was" price (display only)
 }
 
 const query = `*[_type == "product"] | order(_createdAt desc)[0..11]{
@@ -17,7 +17,7 @@ const query = `*[_type == "product"] | order(_createdAt desc)[0..11]{
   slug,
   images,
   price,
-  discountPrice
+  compareAtPrice
 }`
 
 export default async function FeaturedProducts() {

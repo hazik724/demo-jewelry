@@ -25,7 +25,7 @@ export const productType = defineType({
       name: 'images',
       title: 'Product Images',
       type: 'array',
-      of: [{ type: 'image' }],
+      of: [{ type: 'image', options: { hotspot: true } }],
     }),
 
     defineField({
@@ -37,36 +37,41 @@ export const productType = defineType({
     // Pricing
     defineField({
       name: 'price',
-      title: 'Price',
+      title: 'Actual Price',
       type: 'number',
+      description: 'The real price the customer pays',
       validation: (rule) => rule.required().min(0),
     }),
 
     defineField({
-      name: 'discountPrice',
-      title: 'Discount Price',
-      type: 'number',
-      validation: (rule) => rule.min(0),
-    }),
-
-    defineField({
       name: 'compareAtPrice',
-      title: 'Compare At Price',
+      title: 'Showcase Price (Crossed Out)',
       type: 'number',
-      description: 'Original price before discount',
-      validation: (rule) => rule.min(0),
+      description: 'Higher "original" price shown crossed out. Leave empty for no sale.',
+      validation: (rule) =>
+        rule.min(0).custom((value, context) => {
+          const price = (context.document as { price?: number })?.price
+          if (value && price && value <= price) {
+            return 'Showcase price must be higher than the actual price'
+          }
+          return true
+        }),
     }),
 
-    
-
-    // Categories (multiple)
     defineField({
       name: 'categories',
       title: 'Categories',
       type: 'array',
       of: [{ type: 'reference', to: [{ type: 'category' }] }],
     }),
-
-   
   ],
+
+  preview: {
+    select: { title: 'title', media: 'images.0', price: 'price' },
+    prepare: ({ title, media, price }) => ({
+      title,
+      media,
+      subtitle: price !== undefined ? `Rs ${price}` : 'No price',
+    }),
+  },
 })

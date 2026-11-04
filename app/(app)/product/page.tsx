@@ -1,101 +1,88 @@
-import ProductsClient from "./ProductsClient"
 import type { Metadata } from "next"
+import { client } from "@/sanity/lib/client"
+import { urlFor } from "@/sanity/lib/image"
+import ProductsClient from "./ProductsClient"
 
-/* ---------------- SEO METADATA (UPGRADED) ---------------- */
+// Re-generate this page at most once every 60 seconds (fast + always fresh enough)
+export const revalidate = 60
+
+const SITE_URL = "https://jhumkara.com"
+
+/* ---------------- SSR DATA ---------------- */
+async function getProducts() {
+  const query = `*[_type == "product"] | order(_createdAt desc){
+    _id,
+    title,
+    slug,
+    images,
+    price,
+    compareAtPrice,
+    categories[]->{ title, slug }
+  }`
+
+  return await client.fetch(query)
+}
+
+// Only categories that actually contain products (no empty pills)
+async function getCategories() {
+  const query = `*[_type == "category" && count(*[_type == "product" && references(^._id)]) > 0]
+    | order(title asc){
+    title,
+    slug
+  }`
+
+  return await client.fetch(query)
+}
+
+/* ---------------- SEO METADATA ---------------- */
 export const metadata: Metadata = {
-  title: "Buy Jewelry Online in Pakistan | Jhumkara by Zyra",
+  title: "Jewelry Collection | Buy Jewelry Online in Pakistan | Jhumkara",
   description:
-    "Explore premium handcrafted jewelry in Pakistan including bridal jewelry, earrings, rings, necklaces, and luxury accessories. Shop online with cash on delivery and affordable prices.",
-
+    "Explore premium handcrafted jewelry including earrings, rings, necklaces, and luxury accessories by Jhumkara by Zyra. Cash on delivery across Pakistan.",
   alternates: {
-    canonical: "https://jhumkara.com/product",
+    canonical: `${SITE_URL}/product`,
   },
-
   openGraph: {
     title: "Jewelry Collection | Jhumkara by Zyra",
     description:
-      "Premium handcrafted jewelry collection in Pakistan. Explore earrings, rings, necklaces, and luxury fashion pieces.",
-    url: "https://jhumkara.com/product",
-    siteName: "Jhumkara by Zyra",
+      "Premium handcrafted jewelry designed for modern elegance. Shop online in Pakistan.",
+    url: `${SITE_URL}/product`,
+    siteName: "Jhumkara",
     type: "website",
   },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Jewelry Collection Pakistan | Jhumkara",
-    description:
-      "Shop premium handcrafted jewelry online in Pakistan with cash on delivery.",
-  },
-}
-
-/* ---------------- STRUCTURED DATA (SEO POWER BOOST) ---------------- */
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  name: "Jewelry Collection Pakistan",
-  description:
-    "Premium handcrafted jewelry collection in Pakistan by Jhumkara by Zyra.",
-  url: "https://jhumkara.com/product",
-  mainEntity: {
-    "@type": "ItemList",
-    name: "Jewelry Products",
-  },
-}
-
-/* ---------------- OPTIONAL FAQ SCHEMA (RICH RESULTS BOOST) ---------------- */
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "Do you offer cash on delivery in Pakistan?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes, we offer cash on delivery across Pakistan.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Is your jewelry handmade?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes, all our jewelry is handcrafted with premium materials.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What type of jewelry do you sell?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "We sell earrings, rings, necklaces, bridal jewelry, and luxury accessories.",
-      },
-    },
-  ],
 }
 
 /* ---------------- PAGE ---------------- */
-export default function Page() {
+export default async function ProductsPage() {
+  const [products, categories] = await Promise.all([
+    getProducts(),
+    getCategories(),
+  ])
+
+  /* ---------------- JSON-LD (ItemList) ---------------- */
+  const listSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Jewelry Collection by Jhumkara",
+    numberOfItems: products.length,
+    itemListElement: products.slice(0, 24).map((p: any, i: number) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${SITE_URL}/product/${p.slug.current}`,
+      name: p.title,
+      ...(p.images?.[0]
+        ? { image: urlFor(p.images[0]).width(600).url() }
+        : {}),
+    })),
+  }
+
   return (
     <>
-      {/* JSON-LD STRUCTURED DATA */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schema),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(listSchema) }}
       />
-
-      {/* FAQ SCHEMA */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(faqSchema),
-        }}
-      />
-
-      {/* MAIN CLIENT PAGE */}
-      <ProductsClient />
+      <ProductsClient initialProducts={products} categories={categories} />
     </>
   )
 }
