@@ -102,13 +102,35 @@ export default defineType({
     }),
 
     defineField({
+      name: "advanceAmount",
+      title: "Advance Amount (customer pays before delivery)",
+      type: "number",
+    }),
+
+    defineField({
+      name: "amountDueOnDelivery",
+      title: "Collect on Delivery",
+      description: "What the rider collects at the door.",
+      type: "number",
+    }),
+
+    defineField({
+      name: "advanceReceived",
+      title: "Advance Payment Received",
+      description: "Tick after you confirm the screenshot on WhatsApp.",
+      type: "boolean",
+      hidden: ({ document }) => document?.paymentMethod !== "advance",
+    }),
+
+    defineField({
       name: "paymentMethod",
       title: "Payment Method",
       type: "string",
       options: {
         list: [
           { title: "Cash on Delivery", value: "cod" },
-          { title: "Online Payment", value: "online" },
+          { title: "Advance Payment", value: "advance" },
+          { title: "Online Payment (old orders)", value: "online" },
         ],
       },
     }),
@@ -138,11 +160,12 @@ export default defineType({
       total: "totalAmount",
       status: "status",
       payment: "paymentMethod",
+      due: "amountDueOnDelivery",
     },
-    prepare({ orderId, name, total, status, payment }) {
+    prepare({ orderId, name, total, status, payment, due }) {
       return {
         title: `#${orderId} • ${name}`,
-        subtitle: `PKR ${total} • ${payment === "online" ? "Online" : "COD"} • ${status}`,
+        subtitle: `PKR ${total} • ${payment === "cod" ? "COD" : "Advance"} • collect PKR ${due ?? total} • ${status}`,
       }
     },
   },

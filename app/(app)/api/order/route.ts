@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { client } from "@/sanity/lib/client"
 import { urlFor } from "@/sanity/lib/image"
-
-// Keep these in sync with COD_FEE / ONLINE_FEE in the checkout page.
-const SHIPPING_FEE = { cod: 400, online: 250 } as const
-type PaymentMethod = keyof typeof SHIPPING_FEE
+import { getPaymentBreakdown, type PaymentMethod } from "@/sanity/lib/shipping"
 
 const MAX_LINE_ITEMS = 30
 const MAX_QTY_PER_ITEM = 50
@@ -44,7 +41,9 @@ export async function POST(req: NextRequest) {
     }
 
     const paymentMethod: PaymentMethod =
-      body.paymentMethod === "online" ? "online" : "cod"
+      body.paymentMethod === "advance" || body.paymentMethod === "online"
+        ? "advance"
+        : "cod"
 
     /* ---------------- VALIDATE CART LINES ---------------- */
     const lines: { _id: string; quantity: number }[] = Array.isArray(
@@ -115,8 +114,12 @@ export async function POST(req: NextRequest) {
 
     /* ---------------- SERVER-SIDE TOTALS ---------------- */
     const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0)
-    const shippingFee = SHIPPING_FEE[paymentMethod]
-    const totalAmount = subtotal + shippingFee
+    const {
+      shippingFee,
+      total: totalAmount,
+      payNow,
+      dueOnDelivery,
+    } = getPaymentBreakdown(subtotal, paymentMethod)
 
     // If the customer saw a different total, their cart has stale prices.
     // Stop here so nobody is charged a different amount than they saw.
@@ -156,6 +159,9 @@ export async function POST(req: NextRequest) {
       shippingFee,
       totalAmount,
       paymentMethod,
+      advanceAmount: payNow, // customer transfers this before delivery
+      amountDueOnDelivery: dueOnDelivery, // rider collects this at the door
+      ...(paymentMethod === "advance" ? { advanceReceived: false } : {}),
       status: "pending",
       createdAt: new Date().toISOString(),
     })

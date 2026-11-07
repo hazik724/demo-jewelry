@@ -6,6 +6,12 @@ import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import DeliveryText from "@/components/deliverytext"
+import {
+  SHIPPING_FEE,
+  SHIPPING_SAVING,
+  getPaymentBreakdown,
+  type PaymentMethod,
+} from "@/sanity/lib/shipping"
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 // Brand:    #2FA084  (Jhumkara teal)
@@ -17,9 +23,8 @@ import DeliveryText from "@/components/deliverytext"
 // ──────────────────────────────────────────────────────────────────────────────
 
 const BRAND = "#2FA084"
-const COD_FEE = 400
-const ONLINE_FEE = 250
-const SHIPPING_SAVING = COD_FEE - ONLINE_FEE
+const COD_FEE = SHIPPING_FEE.cod
+const ADVANCE_FEE = SHIPPING_FEE.advance
 
 const pkr = (n: number) => `PKR ${n.toLocaleString("en-PK")}`
 
@@ -79,7 +84,7 @@ const FIELDS: {
 ]
 
 export default function CheckoutPage() {
-  const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod")
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod")
   const [errors, setErrors] = useState<Partial<Record<FormKey, string>>>({})
   const [submitError, setSubmitError] = useState("")
   const { items, clearCart } = useCartStore()
@@ -98,10 +103,20 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  // Remember the amounts at the moment of ordering (the cart is cleared after)
+  const [receipt, setReceipt] = useState<{
+    method: PaymentMethod
+    payNow: number
+    dueOnDelivery: number
+  } | null>(null)
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shippingFee = paymentMethod === "online" ? ONLINE_FEE : COD_FEE
-  const finalTotal = total + shippingFee
+  const {
+    shippingFee,
+    total: finalTotal,
+    payNow,
+    dueOnDelivery,
+  } = getPaymentBreakdown(total, paymentMethod)
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -161,7 +176,7 @@ export default function CheckoutPage() {
 
           userId: null,
 
-          paymentMethod, // "cod" | "online"
+          paymentMethod, // "cod" | "advance"
 
           products: items.map((item) => ({
             _id: item._id, // lets the server verify the real price
@@ -179,11 +194,13 @@ export default function CheckoutPage() {
       const json = await res.json()
 
       if (json.success) {
+        setReceipt({ method: paymentMethod, payNow, dueOnDelivery })
         clearCart()
         setSuccess(true)
       } else {
         setSubmitError(
-          "We couldn't place your order. Please check your details and try again."
+          json.error ||
+            "We couldn't place your order. Please check your details and try again."
         )
       }
     } catch (err) {
@@ -359,20 +376,21 @@ export default function CheckoutPage() {
                   <div className="min-w-0">
                     <p className="text-[0.9rem] font-medium">Cash on Delivery</p>
                     <p className="mt-0.5 text-[0.78rem] text-[#6b7280]">
-                      Pay when your order arrives
+                      Pay nothing now. Pay everything when your order arrives.
                     </p>
                   </div>
                 </div>
 
-                <span className="shrink-0 text-sm font-semibold">
-                  {pkr(COD_FEE)}
-                </span>
+                <div className="shrink-0 text-right">
+                  <span className="text-sm font-semibold">{pkr(COD_FEE)}</span>
+                  <p className="text-[0.7rem] text-[#6b7280]">shipping</p>
+                </div>
               </label>
 
-              {/* Online */}
+              {/* Advance */}
               <label
                 className={`flex cursor-pointer items-center justify-between gap-3 border-[1.5px] px-5 py-4 transition-all duration-200 ${
-                  paymentMethod === "online"
+                  paymentMethod === "advance"
                     ? "border-[#2FA084] bg-[#2FA084]/5"
                     : "border-[#e4e8ed] bg-white"
                 }`}
@@ -381,24 +399,24 @@ export default function CheckoutPage() {
                   <input
                     type="radio"
                     name="payment"
-                    checked={paymentMethod === "online"}
-                    onChange={() => setPaymentMethod("online")}
+                    checked={paymentMethod === "advance"}
+                    onChange={() => setPaymentMethod("advance")}
                     className="h-4 w-4 shrink-0 accent-[#2FA084]"
                   />
                   <div className="min-w-0">
-                    <p className="text-[0.9rem] font-medium">Online Payment</p>
+                    <p className="text-[0.9rem] font-medium">Advance Payment</p>
                     <p className="mt-0.5 text-[0.78rem] text-[#6b7280]">
-                      Bank · Easypaisa · JazzCash
+                      Pay product price now · shipping on delivery
                     </p>
                   </div>
                 </div>
 
                 <div className="shrink-0 text-right">
                   <span className="text-sm font-semibold text-[#1f7a63]">
-                    {pkr(ONLINE_FEE)}
+                    {pkr(ADVANCE_FEE)}
                   </span>
                   <p className="text-[0.7rem] text-[#1f7a63]">
-                    Save {pkr(SHIPPING_SAVING)}
+                    shipping · Save {pkr(SHIPPING_SAVING)}
                   </p>
                 </div>
               </label>
@@ -419,12 +437,13 @@ export default function CheckoutPage() {
                 <path d="M12 8v4m0 4h.01" />
               </svg>
               <span>
-                Choose online payment and save {pkr(SHIPPING_SAVING)} on shipping.
+                Pay the product price in advance and shipping drops to{" "}
+                {pkr(ADVANCE_FEE)}, paid when your parcel arrives.
               </span>
             </div>
 
-            {/* Online payment details */}
-            {paymentMethod === "online" && (
+            {/* Advance payment details */}
+            {paymentMethod === "advance" && (
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -447,15 +466,31 @@ export default function CheckoutPage() {
                   </svg>
                   <div className="min-w-0">
                     <p className="text-[0.9rem] font-medium">
-                      Secure Payment Details
+                      Advance Payment Details
                     </p>
                     <p className="mt-px text-xs opacity-80">
-                      Transfer to any of the accounts below
+                      Transfer {pkr(payNow)} to any of the accounts below
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-4 p-4 md:p-6">
+                  {/* Amount to transfer */}
+                  <div className="border-l-[3px] border-[#2FA084] bg-[#2FA084]/5 px-4 py-3 text-sm">
+                    <div className="flex justify-between gap-3">
+                      <span className="text-[#6b7280]">Transfer now (product price)</span>
+                      <span className="font-semibold text-[#1f7a63]">
+                        {pkr(payNow)}
+                      </span>
+                    </div>
+                    <div className="mt-1 flex justify-between gap-3">
+                      <span className="text-[#6b7280]">
+                        Pay on delivery (shipping)
+                      </span>
+                      <span className="font-medium">{pkr(dueOnDelivery)}</span>
+                    </div>
+                  </div>
+
                   {PAYMENT_ACCOUNTS.map((acc) => (
                     <div
                       key={acc.bank}
@@ -559,6 +594,20 @@ export default function CheckoutPage() {
               <div className="mt-1 flex justify-between border-t border-[#e4e8ed] pt-4 text-[1.05rem] font-semibold">
                 <span>Total</span>
                 <span>{pkr(finalTotal)}</span>
+              </div>
+
+              {/* When you pay */}
+              <div className="space-y-2 border-l-[3px] border-[#2FA084] bg-[#2FA084]/5 px-4 py-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-[#6b7280]">Pay now</span>
+                  <span className="font-semibold text-[#1f7a63]">
+                    {pkr(payNow)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#6b7280]">Pay on delivery</span>
+                  <span className="font-semibold">{pkr(dueOnDelivery)}</span>
+                </div>
               </div>
 
               <div className="pt-2 text-sm text-[#6b7280]">
@@ -680,8 +729,28 @@ export default function CheckoutPage() {
               </h2>
 
               <p className="mb-8 text-[0.9rem] leading-relaxed text-[#6b7280]">
-                Your order has been placed successfully. You&apos;ll receive a
-                confirmation shortly.
+                {receipt?.method === "advance" ? (
+                  <>
+                    Please transfer{" "}
+                    <strong className="text-[#1a1f2e]">
+                      {pkr(receipt.payNow)}
+                    </strong>{" "}
+                    (product price) and send the screenshot on WhatsApp
+                    03083366699. Pay{" "}
+                    <strong className="text-[#1a1f2e]">
+                      {pkr(receipt.dueOnDelivery)}
+                    </strong>{" "}
+                    shipping to the rider when your parcel arrives.
+                  </>
+                ) : (
+                  <>
+                    Your order has been placed. Please keep{" "}
+                    <strong className="text-[#1a1f2e]">
+                      {pkr(receipt?.dueOnDelivery ?? 0)}
+                    </strong>{" "}
+                    ready to pay when your parcel arrives.
+                  </>
+                )}
               </p>
 
               <Link
