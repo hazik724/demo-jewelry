@@ -1,6 +1,6 @@
 import CategorySort from "@/components/categorySort"
 import { client } from "@/sanity/lib/client"
-import CategoryProductCard from "@/components/ProductCard"
+import CategoryProductCard from "@/components/CategoryProductCard"
 import type { Metadata } from "next"
 
 /* ---------------- SEO METADATA ---------------- */
@@ -57,7 +57,7 @@ export default async function CategoryPage({
     slug,
     images,
     price,
-    discountPrice
+    compareAtPrice
   }`
 
   const products = await client.fetch(query, { slug })
